@@ -1,0 +1,15 @@
+{
+  "name": "creationapplresptitca",
+  "version": "1.0.0",
+  "description": "<h1>Bien venue sur le site du estaurant P'tit Cahoua</h1>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^5.3.3"
+  }
+}
