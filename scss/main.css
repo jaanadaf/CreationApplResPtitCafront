@@ -12011,4 +12011,8 @@ p {
   align-items: center;
   justify-content: center;
   margin-top: -15px;
+}
+
+.text-jutify {
+  text-align: justify;
 }/*# sourceMappingURL=main.css.map */
