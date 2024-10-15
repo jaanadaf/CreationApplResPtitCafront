@@ -11976,7 +11976,7 @@ main {
 }
 
 footer.footer {
-  padding-bottom: 20px;
+  padding: 5px;
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -11989,6 +11989,7 @@ p {
 
 .hero-scene {
   position: relative;
+  margin-bottom: 15px;
 }
 .hero-scene::before {
   content: "";
@@ -12046,4 +12047,8 @@ p {
   transform: translate(-50%, -50%);
   opacity: 0;
   transition: all 0.3s;
+}
+
+.form-label {
+  color: blue;
 }/*# sourceMappingURL=main.css.map */
