@@ -893,59 +893,97 @@ const token = "hdgekdstelpdjdnssje";
 L'objectif est de placer ce token dans un cookie : si nous avons ce token, l'utilisateur est connecté, sinon il est déconnecté.
 
 ==============================================================================================
-Nous voulons maintenent gérer les kookies:c'est à dire nous voulons ajouter ce tokens dans le kookie pour spécifier à l'utilisateur s'il est connecté ou non, nous allons utilisés les méthodes qu nous avons vue dans le cours qui permettent de gerer les kookies, ces méthodes nous allons les collerdans le fichier "script.js", il sera accessible sur n'importe quelle page, on va donc le créer , contraire aux autres pages qui sont accessible uniquement à une page précise, pour l'appeller sur n'importe quelle page, il faut aller sur le fichier "index.html" et ajouter le script suivant:
-<script src="js/script.js"><script/> et je viens coller les méthodes de gestion de kookie, j'ai trois méthodes :
+CONNEXION :
 
-function setCookie(name,value,days) {
+Nous voulons maintenant gérer les cookies, c'est-à-dire que nous voulons ajouter ce token dans un cookie pour indiquer à l'utilisateur s'il est connecté ou non. Nous allons utiliser les méthodes que nous avons vues dans le cours pour gérer les cookies. Ces méthodes seront collées dans le fichier script.js, qui sera accessible depuis n'importe quelle page. Contrairement aux autres scripts qui sont spécifiques à une seule page, celui-ci doit être chargé sur toutes les pages. Pour l'appeler, il faut aller dans le fichier index.html et ajouter le script suivant :
+
+html
+Copier le code
+<script src="js/script.js"></script>
+Ensuite, je vais coller les méthodes de gestion des cookies. Voici les trois méthodes :
+
+javascript
+Copier le code
+function setCookie(name, value, days) {
     var expires = "";
     if (days) {
         var date = new Date();
         date.setTime(date.getTime() + (days*24*60*60*1000));
         expires = "; expires=" + date.toUTCString();
     }
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
 function getCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
     }
     return null;
 }
 
-function eraseCookie(name) {   
-    document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+function eraseCookie(name) {
+    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
+En plus de cela, je vais créer une fonction pour stocker le token. Cette méthode, qui prend un paramètre token, va stocker le token dans un cookie. Le nom de mon cookie sera "accesstoken", et je veux que ce token soit valide pendant 7 jours. Après 7 jours, le cookie expirera. Je vais également créer une fonction pour récupérer le cookie contenant le token. Dans le fichier signin.js, nous allons appeler setToken(token).
 
-En plus de cela je vais créer une fonction  de Token(token), cette methode qui a pour paramétre token va stocker le token en kookie, cette méthodeaura pour nom la variable qu'on va stockés dans la variable, le nom de mon kookie sera "accesstoken" pour qu'on puisse utiliser cette variable plusieures fois la valeur , la valeur c'est token et le nombre de jour que ma connection soit valide ici dans notre exemple 7 jours, aprés 7 jours les kookies disparaitront, on va créer un autre fonction qui va récupererle kookie du token, on va dans le fichier signin.js et on va faire un setToken(token);
-
+javascript
+Copier le code
 const tokenCookieName = "accesstoken";
-function setToken(token){
-    setCookie(tokenKookieName, token, 7)
-}
-function getToken(){
-    return getCookies(tokenCookieName)
-}
-Ces méthodes qui sont dans le script.js , je vais les utilisés dans le signin.js, au moment de la connection je vais mettre en place ce kookie, j'appelle la méthode "setToken(token)"
-Maintenant que nous avons mis en place cette méthode là, nous avons envie de savoir si nous somme connectés ou non, nous avons pouvoir implémenté une méthode qui nous permettera de savoir si l'utilisateur est connecté ou non, nous allons la faire dans "script.js", nous allons pouvoir créer une méthode :
 
-function isConnected(){
-    if(getToken() == null || getToken == undefined){
+function setToken(token) {
+    setCookie(tokenCookieName, token, 7);
+}
+
+function getToken() {
+    return getCookie(tokenCookieName);
+}
+Ces méthodes se trouvent dans script.js et seront utilisées dans signin.js. Lors de la connexion, je vais définir le cookie en appelant la méthode setToken(token).
+
+Maintenant que cette méthode est en place, nous voulons savoir si l'utilisateur est connecté ou non. Pour cela, nous allons implémenter une méthode dans script.js qui nous permettra de vérifier l'état de connexion :
+
+javascript
+Copier le code
+function isConnected() {
+    if (getToken() == null || getToken() == undefined) {
         return false;
-    }
-    else{
+    } else {
         return true;
     }
 }
-if(isconnected()){
+
+if (isConnected()) {
     alert("Je suis connecté");
+} else {
+    alert("Je ne suis pas connecté");
 }
-else{
-    alert("Je ne suis pas connecté);
+J'espère que cela t'aide ! N'hésite pas si tu as d'autres questions ou besoin de précisions.
+==========================================================================
+DECONNECTION:
+
+DÉCONNEXION :
+
+Nous allons gérer la déconnexion de notre site. La déconnexion consiste simplement à supprimer le cookie qui porte le nom "accesstoken". Ce que nous voulons faire, c'est ajouter un bouton qui permettra de se déconnecter. Je vais ajouter ce bouton dans le fichier index.html, dans le menu, en tant qu'élément ("item"). Ce bouton ne sera pas un lien, mais un bouton qui aura pour ID "signoutBtn". Lorsque l'utilisateur cliquera sur ce bouton, il sera déconnecté.
+
+Dans le fichier script.js, nous allons récupérer ce bouton en créant une variable 
+javascript
+Copier le code
+const signoutBtn = document.getElementById("signout-btn");
+Ensuite, nous allons lui ajouter un événement :
+
+javascript
+Copier le code
+signoutBtn.addEventListener("click", signout);
+Cet événement écoute les clics et appelle la fonction signout. Il faut donc créer cette fonction, qui va supprimer le cookie tokenCookieName. Une fois déconnecté, nous allons actualiser la page avec la méthode window.location.reload() pour mettre à jour l'interface utilisateur :
+
+javascript
+Copier le code
+function signout() {
+    eraseCookie(tokenCookieName);
+    window.location.reload();
 }
 
 
