@@ -11,6 +11,7 @@ btnSignin.addEventListener("click" , checkCredentials);
 
             //il faudra récupérer le vrai token
             const token = "lkjsdngfljsqdnglkjsdbglkjqskjgkfjgbqslkfdgbskldfgdfgsdgf";
+            setToken(token);
 
             //l'objectif c'est de placer ce token en cookie
             window.location.replace("/");

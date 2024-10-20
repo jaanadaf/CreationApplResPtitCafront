@@ -893,7 +893,60 @@ const token = "hdgekdstelpdjdnssje";
 L'objectif est de placer ce token dans un cookie : si nous avons ce token, l'utilisateur est connecté, sinon il est déconnecté.
 
 ==============================================================================================
-Nous voulons maintenent gérer les kookies:c'est à dire nous voulons ajouter ce tokens dans le kookie pour spécifier à l'utilisateur s'il est connecté ou non, nous allons utilisés les méthodes qu nous avons vue dans le cours qui permettent de gerer les kookies, ces méthodes nous allons les collerdans le fichier "script.js", il sera accessible sur n'importe quelle page, on va donc le créer
+Nous voulons maintenent gérer les kookies:c'est à dire nous voulons ajouter ce tokens dans le kookie pour spécifier à l'utilisateur s'il est connecté ou non, nous allons utilisés les méthodes qu nous avons vue dans le cours qui permettent de gerer les kookies, ces méthodes nous allons les collerdans le fichier "script.js", il sera accessible sur n'importe quelle page, on va donc le créer , contraire aux autres pages qui sont accessible uniquement à une page précise, pour l'appeller sur n'importe quelle page, il faut aller sur le fichier "index.html" et ajouter le script suivant:
+<script src="js/script.js"><script/> et je viens coller les méthodes de gestion de kookie, j'ai trois méthodes :
+
+function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
+function eraseCookie(name) {   
+    document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+En plus de cela je vais créer une fonction  de Token(token), cette methode qui a pour paramétre token va stocker le token en kookie, cette méthodeaura pour nom la variable qu'on va stockés dans la variable, le nom de mon kookie sera "accesstoken" pour qu'on puisse utiliser cette variable plusieures fois la valeur , la valeur c'est token et le nombre de jour que ma connection soit valide ici dans notre exemple 7 jours, aprés 7 jours les kookies disparaitront, on va créer un autre fonction qui va récupererle kookie du token, on va dans le fichier signin.js et on va faire un setToken(token);
+
+const tokenCookieName = "accesstoken";
+function setToken(token){
+    setCookie(tokenKookieName, token, 7)
+}
+function getToken(){
+    return getCookies(tokenCookieName)
+}
+Ces méthodes qui sont dans le script.js , je vais les utilisés dans le signin.js, au moment de la connection je vais mettre en place ce kookie, j'appelle la méthode "setToken(token)"
+Maintenant que nous avons mis en place cette méthode là, nous avons envie de savoir si nous somme connectés ou non, nous avons pouvoir implémenté une méthode qui nous permettera de savoir si l'utilisateur est connecté ou non, nous allons la faire dans "script.js", nous allons pouvoir créer une méthode :
+
+function isConnected(){
+    if(getToken() == null || getToken == undefined){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+if(isconnected()){
+    alert("Je suis connecté");
+}
+else{
+    alert("Je ne suis pas connecté);
+}
 
 
 
