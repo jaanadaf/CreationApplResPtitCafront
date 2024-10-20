@@ -753,7 +753,7 @@ Le premier code est pour valider que deux mots de passe correspondent (ex : un f
 
 
 
-CODE/
+============> CODE DE BASE 
 :
 // Récupérer les éléments du formulaire
 const inputNom = document.getElementById("NomInput");
@@ -847,13 +847,53 @@ function validatePassword(input){
     
     
 }
+==========================================================================
 
+Voici la correction des fautes de ton texte :
 
+GESTION DE LA CONNEXION ET DÉCONNEXION
 
+Nous allons maintenant implémenter la fonction de connexion sur le site P'tit Cahoua. L'objectif est de mettre en place une connexion artificielle, c'est-à-dire que nous n'avons pas encore d'API de connexion à appeler ni de base de données. Nous allons simplement simuler une connexion sur un compte. Par exemple, seul le compte avec l'email aouad@yahoo.fr et le mot de passe 12345! pourra être connecté. Nous allons stocker l'état de l'utilisateur (connecté ou non) dans un cookie, ainsi qu'un token (par exemple un badge d'accès). L'objectif initial est de gérer une connexion qui nous permet de vérifier si les données saisies sont correctes ou non. Pour cela, nous allons ajouter un fichier JavaScript à notre connexion.
 
+Dans le fichier allRoute.js, nous ajouterons notre chemin d'accès à la route "signin" : "/js/auth/signup.js".
 
+Depuis notre page signin.html, nous allons récupérer l'input de l'email et celui du mot de passe. Nous allons créer deux variables :
 
+javascript
+Copier le code
+const mailInput = document.getElementById("EmailInput");
+const passwordInput = document.getElementById("PasswordInput");
+Ensuite, nous allons récupérer le bouton de connexion, lui donner un ID "btnSignin", et lui attribuer une action. Il faut changer le type du bouton de "submit" à "button", car le bouton va valider le formulaire mais il doit exécuter l'action que nous définissons nous-mêmes. Nous allons écouter l'événement "click" sur le bouton avec un addEventListener, qui exécutera la fonction checkCredentials au moment où on clique sur le bouton :
 
+javascript
+Copier le code
+btnSignin.addEventListener("click", checkCredentials);
+Nous allons créer cette fonction qui va vérifier les données utilisateur avec une simple condition pour valider les éléments du formulaire :
+
+javascript
+Copier le code
+if (mailInput.value == "test@mail.com" && passwordInput.value == "123") {
+    alert("Vous êtes connecté");
+} else {
+    mailInput.classList.add("is-invalid");
+    passwordInput.classList.add("is-invalid");
+}
+Le test est réussi, nous allons maintenant ajouter un message d'erreur dans le cas où l'email et le mot de passe ne correspondent pas. Pour cela, il faut créer un message d'erreur dans le HTML :
+
+html
+Copier le code
+<div class="invalid-feedback">
+    L'email et le mot de passe ne correspondent pas.
+</div>
+Ma fonction de connexion simule maintenant correctement une connexion. Ce que je voudrais faire ensuite, c'est simuler un token, par exemple une chaîne de caractères aléatoire que nous appellerons ainsi :
+
+javascript
+Copier le code
+const token = "hdgekdstelpdjdnssje";
+L'objectif est de placer ce token dans un cookie : si nous avons ce token, l'utilisateur est connecté, sinon il est déconnecté.
+
+==============================================================================================
+Nous voulons maintenent gérer les kookies:c'est à dire nous voulons ajouter ce tokens dans le kookie pour spécifier à l'utilisateur s'il est connecté ou non, nous allons utilisés les méthodes qu nous avons vue dans le cours qui permettent de gerer les kookies, ces méthodes nous allons les collerdans le fichier "script.js", il sera accessible sur n'importe quelle page, on va donc le créer
 
 
 
