@@ -13,6 +13,9 @@ btnSignin.addEventListener("click" , checkCredentials);
             const token = "lkjsdngfljsqdnglkjsdbglkjqskjgkfjgbqslkfdgbskldfgdfgsdgf";
             setToken(token);
 
+            //placer ce cookie en cookie
+            setCookie(RoleCookieName, "client", 7);
+
             //l'objectif c'est de placer ce token en cookie
             window.location.replace("/");
     }

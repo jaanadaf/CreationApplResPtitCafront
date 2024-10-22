@@ -985,8 +985,210 @@ function signout() {
     eraseCookie(tokenCookieName);
     window.location.reload();
 }
+==========================================================================
+Afficher/masquer des éléments sur la page en fonction du rôle:
+Maintenant que nous pouvons nous connecter et déconncter nous allons pouvoir masquer les éléments en fonction de nos besoin, mias selon notre cahier de charge nous savons que l'utilisateur peut avoir différent roles , il peut etre un visiteur non connecté , un utilisateur connecté ou un addministrateur, l'ojectif est de gerer ces roles, cela nous allons le faire dans notre connexion, dans la connexion nous ajoutons un token, en plus du token il faut gérer le role de l'utilisateur, pour cela nous allons utiliser la méthode "setCookie("rol", "admin", 7)" qui aura pour paramétre un role pour un addministrateur et une durée de 7 jours,.
+Dans le fichier "script.js" nous devons suprimer ce cookie
+avec la méthode "eraseCookie("role")", étant donné qu'il y' a deux fois la chaine de caractére rolr , il fautmieux créer une variable "const RoleCookieName = "role";" en meme temps il faut changer le paramétre "role" dans la méthode setCookie pour éviter les fautes d'orthographe.
+Ce que nous allons faire maintenant c'est d'utiliser une méthode pour récupérer le role de l'administrateur: 
+function getRole(){
+    return getRole(RoleCookieName);
+}
+Maintenant que je connait le role de l'utilisateur, nous pourrons 
+Afficher/masquer des éléments sur la page en fonction du rôle
+Maintenant que nous pouvons nous connecter et nous déconnecter, nous allons pouvoir masquer ou afficher des éléments en fonction de nos besoins. Selon notre cahier des charges, nous savons que l'utilisateur peut avoir différents rôles : il peut être un visiteur non connecté, un utilisateur connecté, ou un administrateur. L'objectif est de gérer ces rôles. Pour cela, nous allons le faire dans notre logique de connexion. Lors de la connexion, nous ajoutons un token, et en plus de ce token, il faut également gérer le rôle de l'utilisateur.
 
+Pour ce faire, nous allons utiliser la méthode setCookie("role", "admin", 7) qui va enregistrer un cookie avec le rôle d'administrateur pour une durée de 7 jours. Ensuite, dans le fichier script.js, nous devons supprimer ce cookie à l'aide de la méthode eraseCookie("role").
 
+Comme il y a plusieurs fois le mot "role" utilisé dans le code, il est préférable de créer une variable constante const RoleCookieName = "role"; pour éviter les fautes d'orthographe et faciliter la maintenance du code. Il faut ensuite remplacer les occurrences de "role" par cette variable dans les méthodes liées aux cookies.
+
+Nous allons maintenant créer une méthode pour récupérer le rôle de l'utilisateur :
+
+javascript
+Copier le code
+function getRole() {
+    return getCookie(RoleCookieName);
+}
+Maintenant que je connais le rôle de l'utilisateur, nous pouvons afficher ou masquer les éléments en fonction de ce rôle. On peut définir quatre états :
+
+disconnected (non connecté)
+connected (connecté, soit en tant qu'administrateur soit en tant que client)
+admin
+client
+Pour afficher les éléments appropriés, nous allons utiliser un attribut HTML data-show. Cela permet de gérer facilement l'affichage des éléments selon que l'utilisateur est connecté ou non. Par exemple, dans le fichier index.html, on peut définir les éléments comme suit :
+
+html
+Copier le code
+<li class="nav-item" data-show="disconnected">
+  <a class="nav-link" href="/signin">Connexion</a>
+</li>
+
+<li class="nav-item" data-show="connected">
+  <button class="nav-link" id="signout-btn">Déconnexion</button>
+</li>
+Ensuite, nous créons une fonction showAndHideElementsForRoles() pour afficher ou masquer les éléments selon le rôle de l'utilisateur :
+
+javascript
+Copier le code
+function showAndHideElementsForRoles() {
+    const userConnected = isConnected(); // Vérifie si l'utilisateur est connecté
+    const role = getRole(); // Récupère le rôle de l'utilisateur
+
+    // Sélectionne tous les éléments qui possèdent l'attribut data-show
+    let allElementsToEdit = document.querySelectorAll('[data-show]');
+
+    // Parcourt ces éléments et affiche/masque en fonction du rôle
+    allElementsToEdit.forEach(element => {
+        switch (element.dataset.show) {
+            case 'disconnected': 
+                if (userConnected) {
+                    element.classList.add("d-none"); // Masque l'élément si connecté
+                }
+                break;
+            case 'connected': 
+                if (!userConnected) {
+                    element.classList.add("d-none"); // Masque l'élément si déconnecté
+                }
+                break;
+            case 'admin': 
+                if (!userConnected || role !== "admin") {
+                    element.classList.add("d-none"); // Masque l'élément si pas administrateur
+                }
+                break;
+            case 'client': 
+                if (!userConnected || role !== "client") {
+                    element.classList.add("d-none"); // Masque l'élément si pas client
+                }
+                break;
+        }
+    });
+}
+Ensuite, il faut appeler cette fonction dans le fichier router.js pour qu'elle s'exécute au bon moment, par exemple après le chargement de la page :
+
+javascript
+Copier le code
+// Afficher et masquer les éléments en fonction du rôle
+showAndHideElementsForRoles();
+==============================================================================================================================================================================================
+Authentification dans le routage :
+
+Maintenant, il faut que je parcoure mon site pour attribuer data-show uniquement à certaines personnes. Par exemple, dans la galerie photo, il y a l'option "Modifier" et "Supprimer" qui est réservée à l'administrateur. Nous allons pouvoir modifier la page galerie, il faut aller voir les boutons "Modifier" et "Supprimer" et je vais pouvoir ajouter le data-show admin au bouton dans le fichier galerie.html :
+
+html
+Copier le code
+<div class="action-image-button" data-show="admin">
+    <button data-show="admin" type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#EditionPhotoModal">
+        <i class="bi bi-pencil-square"></i>
+    </button>
+</div>
+Je gère bien maintenant les éléments à afficher ou à masquer en fonction de mon rôle, mais j'ai une faille de sécurité assez importante : même si j'ai masqué des éléments, j'ai toujours accès à des pages auxquelles je n'ai pas droit. C'est pourquoi il faut définir des routes pour certains rôles. Nous devons modifier notre structure de la classe Route.js. Actuellement, notre classe gère une URL, un titre, un pathHtml et un pathJS. Nous allons rajouter un élément qui s'appelle authorize, que nous ajouterons dans la signature de notre constructeur. Nous avons besoin de cet attribut authorize pour instancier une instance de la classe Route. Cet attribut sera un tableau de chaînes de caractères.
+
+javascript
+Copier le code
+export default class Route {
+    constructor(url, title, pathHtml, authorize, pathJS = "") {
+        this.url = url;
+        this.title = title;
+        this.pathHtml = pathHtml;
+        this.pathJS = pathJS;
+        this.authorize = authorize;
+    }
+}
+
+/*
+[] -> Tableau vide : Tout le monde peut y accéder
+["disconnected"] -> Réservé aux utilisateurs déconnectés
+["client"] -> Réservé aux utilisateurs avec le rôle client
+["admin"] -> Réservé aux utilisateurs avec le rôle admin
+["client", "admin"] -> Réservé aux utilisateurs avec le rôle client ou admin
+*/
+Nous avons au total cinq cas possibles que nous allons pouvoir passer dans le fichier AllRoutes.js pour définir l'accès aux pages. Voici la présentation :
+
+javascript
+Copier le code
+import Route from "./Route.js";
+
+// Définir ici vos routes
+export const allRoutes = [
+    new Route("/", "Accueil", "/pages/home.html", []),
+    new Route("/galerie", "La galerie", "/pages/galerie.html", []),
+    new Route("/signin", "Connexion", "/pages/auth/signin.html", ["disconnected"], "/js/auth/signin.js"),
+    new Route("/signup", "Inscription", "/pages/auth/signup.html", ["disconnected"], "/js/auth/signup.js"),
+    new Route("/account", "Mon compte", "/pages/auth/account.html", ["client", "admin"]),
+    new Route("/editPassword", "Changement de mot de passe", "/pages/auth/editPassword.html", ["client", "admin"]),
+    new Route("/allResa", "Vos réservations", "/pages/reservation/allResa.html", ["client"]),
+    new Route("/reserver", "Réserver", "/pages/reservation/reserver.html", ["client"]),
+];
+
+// Le titre s'affiche comme ceci : Route.title - websiteName
+export const websiteName = "Quai Antique";
+Maintenant que nous allons vérifier si l'utilisateur a le rôle nécessaire, nous allons le faire dans le fichier router.js. Ce que nous allons faire, c'est qu'avant d'arriver à la page d'accueil, nous voulons connaître le rôle de chaque utilisateur et leurs droits d'accès. C'est pour cela que nous allons créer une variable :
+
+javascript
+Copier le code
+const allRolesArray = actualRoute.authorize;
+Maintenant, dans notre fichier router.js, nous devons, avant de charger le contenu d’une page en fonction de l’url, vérifier si l’utilisateur a bien le droit d’accéder à cette route. Il suffit pour cela de vérifier si le rôle de l’utilisateur est présent dans le tableau ‘authorize’ de notre route.
+const path = window.location.pathname;
+  // Récupération de l'URL actuelle
+  const actualRoute = getRouteByUrl(path);
+
+  //Vérifier les droits d'accès à la page
+  const allRolesArray = actualRoute.authorize;
+
+  if(allRolesArray.length > 0){
+    if(allRolesArray.includes("disconnected")){
+      if(isConnected()){
+        window.location.replace("/");
+      }
+    }
+    else{
+      const roleUser = getRole();
+      if(!allRolesArray.includes(roleUser)){
+        window.location.replace("/");
+      }
+    }
+  }
+
+  EXPLICATION DU CODE
+
+  javascript
+Copier le code
+const path = window.location.pathname;
+// Récupération de l'URL actuelle
+window.location.pathname : Cette ligne récupère le chemin de l'URL actuelle (par exemple, /galerie, /signin, etc.) et le stocke dans la variable path. Cela permet de savoir sur quelle page l'utilisateur se trouve.
+javascript
+Copier le code
+const actualRoute = getRouteByUrl(path);
+getRouteByUrl(path) : Cette fonction (que tu dois avoir définie ailleurs dans ton code) prend le chemin actuel en argument et retourne l'objet de route correspondant à cette URL, contenant probablement des informations comme le titre de la page, le chemin HTML, et les droits d'accès (l'attribut authorize).
+javascript
+Copier le code
+// Vérifier les droits d'accès à la page
+const allRolesArray = actualRoute.authorize;
+actualRoute.authorize : Cette ligne accède à l'attribut authorize de l'objet actualRoute, qui est un tableau des rôles autorisés à accéder à cette page. On le stocke dans allRolesArray.
+javascript
+Copier le code
+if(allRolesArray.length > 0) {
+Ici, on vérifie si le tableau allRolesArray contient des éléments. Si c'est le cas, cela signifie qu'il y a des restrictions d'accès.
+javascript
+Copier le code
+if(allRolesArray.includes("disconnected")) {
+    if(isConnected()) {
+        window.location.replace("/");
+    }
+}
+allRolesArray.includes("disconnected") : On vérifie si le tableau des rôles autorisés inclut le rôle "disconnected", ce qui signifie que la page est réservée aux utilisateurs qui ne sont pas connectés.
+isConnected() : Cette fonction (à définir ailleurs) vérifie si l'utilisateur est connecté.
+window.location.replace("/") : Si l'utilisateur est connecté (et donc ne doit pas accéder à cette page), il est redirigé vers la page d'accueil.
+javascript
+Copier le code
+else {
+    const roleUser = getRole();
+    if(!allRolesArray.includes(roleUser)) {
+        window.location.replace("/");
+    }
+}
+Si la page n'est pas réservée aux utilisateurs déconnectés, on récupère le rôle de l'utilisateur courant à l'aide de la fonction getRole().
+!allRolesArray.includes(roleUser) : On vérifie si le rôle de l'utilisateur n'est pas dans le tableau allRolesArray. Si c'est le cas, cela signifie que l'utilisateur n'a pas les droits nécessaires pour accéder à la page, et il est donc redirigé vers la page d'accueil.
 
 
 
