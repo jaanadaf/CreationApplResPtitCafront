@@ -1083,8 +1083,7 @@ Copier le code
 </div>
 Je gère bien maintenant les éléments à afficher ou à masquer en fonction de mon rôle, mais j'ai une faille de sécurité assez importante : même si j'ai masqué des éléments, j'ai toujours accès à des pages auxquelles je n'ai pas droit. C'est pourquoi il faut définir des routes pour certains rôles. Nous devons modifier notre structure de la classe Route.js. Actuellement, notre classe gère une URL, un titre, un pathHtml et un pathJS. Nous allons rajouter un élément qui s'appelle authorize, que nous ajouterons dans la signature de notre constructeur. Nous avons besoin de cet attribut authorize pour instancier une instance de la classe Route. Cet attribut sera un tableau de chaînes de caractères.
 
-javascript
-Copier le code
+
 export default class Route {
     constructor(url, title, pathHtml, authorize, pathJS = "") {
         this.url = url;
@@ -1104,8 +1103,6 @@ export default class Route {
 */
 Nous avons au total cinq cas possibles que nous allons pouvoir passer dans le fichier AllRoutes.js pour définir l'accès aux pages. Voici la présentation :
 
-javascript
-Copier le code
 import Route from "./Route.js";
 
 // Définir ici vos routes
@@ -1124,8 +1121,7 @@ export const allRoutes = [
 export const websiteName = "Quai Antique";
 Maintenant que nous allons vérifier si l'utilisateur a le rôle nécessaire, nous allons le faire dans le fichier router.js. Ce que nous allons faire, c'est qu'avant d'arriver à la page d'accueil, nous voulons connaître le rôle de chaque utilisateur et leurs droits d'accès. C'est pour cela que nous allons créer une variable :
 
-javascript
-Copier le code
+
 const allRolesArray = actualRoute.authorize;
 Maintenant, dans notre fichier router.js, nous devons, avant de charger le contenu d’une page en fonction de l’url, vérifier si l’utilisateur a bien le droit d’accéder à cette route. Il suffit pour cela de vérifier si le rôle de l’utilisateur est présent dans le tableau ‘authorize’ de notre route.
 const path = window.location.pathname;
@@ -1151,26 +1147,22 @@ const path = window.location.pathname;
 
   EXPLICATION DU CODE
 
-  javascript
-Copier le code
+
 const path = window.location.pathname;
 // Récupération de l'URL actuelle
 window.location.pathname : Cette ligne récupère le chemin de l'URL actuelle (par exemple, /galerie, /signin, etc.) et le stocke dans la variable path. Cela permet de savoir sur quelle page l'utilisateur se trouve.
-javascript
-Copier le code
+
 const actualRoute = getRouteByUrl(path);
 getRouteByUrl(path) : Cette fonction (que tu dois avoir définie ailleurs dans ton code) prend le chemin actuel en argument et retourne l'objet de route correspondant à cette URL, contenant probablement des informations comme le titre de la page, le chemin HTML, et les droits d'accès (l'attribut authorize).
-javascript
-Copier le code
+
 // Vérifier les droits d'accès à la page
 const allRolesArray = actualRoute.authorize;
 actualRoute.authorize : Cette ligne accède à l'attribut authorize de l'objet actualRoute, qui est un tableau des rôles autorisés à accéder à cette page. On le stocke dans allRolesArray.
-javascript
-Copier le code
+
+
 if(allRolesArray.length > 0) {
 Ici, on vérifie si le tableau allRolesArray contient des éléments. Si c'est le cas, cela signifie qu'il y a des restrictions d'accès.
-javascript
-Copier le code
+
 if(allRolesArray.includes("disconnected")) {
     if(isConnected()) {
         window.location.replace("/");
@@ -1179,8 +1171,8 @@ if(allRolesArray.includes("disconnected")) {
 allRolesArray.includes("disconnected") : On vérifie si le tableau des rôles autorisés inclut le rôle "disconnected", ce qui signifie que la page est réservée aux utilisateurs qui ne sont pas connectés.
 isConnected() : Cette fonction (à définir ailleurs) vérifie si l'utilisateur est connecté.
 window.location.replace("/") : Si l'utilisateur est connecté (et donc ne doit pas accéder à cette page), il est redirigé vers la page d'accueil.
-javascript
-Copier le code
+
+
 else {
     const roleUser = getRole();
     if(!allRolesArray.includes(roleUser)) {
@@ -1189,6 +1181,73 @@ else {
 }
 Si la page n'est pas réservée aux utilisateurs déconnectés, on récupère le rôle de l'utilisateur courant à l'aide de la fonction getRole().
 !allRolesArray.includes(roleUser) : On vérifie si le rôle de l'utilisateur n'est pas dans le tableau allRolesArray. Si c'est le cas, cela signifie que l'utilisateur n'a pas les droits nécessaires pour accéder à la page, et il est donc redirigé vers la page d'accueil.
+================================================================================
+                   APPELER UNE API DEPUIS LE FRONT
+ISTALLATION DE LA PARTIE BACK
+Pour pouvoir appeler notre api depuis javascript,il faut installer notre partie back sur notre machine, pour pouvoir la lancer en local et ainsi l'appeler depuis javascript,il faut aller chercher le  dossier contenant le front"CreationApplResPtitCafront" de notre projet, au dessus de ce dossier front il faut créer un dossier qui va contenir le back "CreationAppResPtitCaBack",il faut se positionner à l'intérieur, une fois on y est il faut cloner le repository dans l'invite de commande pour copier l’application depuis github sur notre pc "https://github.com/GaetanRole/studi-restaurant-symfony-lts-api"
+Sur cette URL, nous avons accès à tous les fichiers de l’application, mais il nous faut savoir la lancer sur notre machine ! C’est pour nous aider qu’un fichier Readme.md est toujours présent. Il contient des instructions pour installer et lancer le programme.
+Méthode:
+Les prérequis:
+La partie « Project requirements » de ce fichier nous mentionne les différents éléments que nous devons avoir installés sur notre machine pour pouvoir lancer l’application. S’il nous en manque, nous devons les installer, sans quoi l’application ne pourra jamais tourner sur notre machine.
+Installation:
+Nous pouvons maintenant installer l’application. La documentation nous explique comment effectuer le ‘git clone’ pour copier l’application depuis github sur notre pc.
+
+Ensuite, nous devons configurer l’application pour la faire fonctionner avec notre environnement. Il suffit de suivre les différentes instructions sur le document.
+
+La commande ‘$ cp .env .env.local’ va copier le fichier de configuration .env dans un nouveau fichier ayant pour nom .env.local. Ce fichier permet de contenir vos informations sensibles (connexion, clé d’authentification, etc.) à contrario du .env qui est une base, pouvant être versionnée.
+
+Nous allons modifier la variable d’environnement DATABASE_URL de ce nouveau fichier. C’est une chaine de connexion, elle permettra à votre application Symfony à se connecter à votre base de données. En utilisant une base de données MySql, nous obtenons une chaîne de connexion composée ainsi :
+
+CTRL+C pour copier, CTRL+V pour coller
+1
+mysql://user:pwd@127.0.0.1:3306/bdd?serverVersion=8&charset=utf8mb4
+mysql://: C'est le protocole utilisé pour la connexion à MySQL.
+
+user: C'est le nom d'utilisateur MySQL que vous utilisez pour vous connecter.
+
+pwd: C'est le mot de passe de l'utilisateur (il est important de noter que le mot de passe doit être gardé confidentiel et sécurisé).
+
+127.0.0.1: C'est l'adresse IP du serveur MySQL auquel vous souhaitez vous connecter. Dans ce cas, il s'agit de l'adresse IP locale, ce qui signifie que le serveur MySQL est sur la même machine que celle à partir de laquelle vous tentez de vous connecter.
+
+3306: C'est le port MySQL par défaut.
+
+bdd : C'est le nom de la base de données à laquelle vous souhaitez vous connecter.
+
+serverVersion=8&charset=utf8mb4: Ici des paramètres supplémentaires spécifiant la version du serveur MySQL et l'encodage de caractères.
+
+Il faut donc modifier cette chaîne de connexion pour l’adapter aux besoins.
+
+Création et mise en place de la BDD
+Nous allons maintenant utiliser les outils mis en place dans l’API pour créer la base de données et sa structure automatiquement. Il suffit pour cela de taper ces trois commandes :
+
+
+composer install      
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrat
+
+Lancer l’API:
+Notre API est maintenant installée, nous pouvons essayer de la lancer en local, en tapant la commande suivante :
+symfony server:start 
+=======================================================================================================================================================================================
+DOCUMENTATION D'API
+Une documentation d'API est un ensemble de documents qui expliquent comment utiliser une API. La documentation d'API est essentielle pour les développeurs, car elle fournit des informations détaillées sur les endpoints (points d'accès) de l'API, les paramètres requis, les formats de données acceptés, les méthodes HTTP supportées, les erreurs possibles, et d'autres informations importantes pour intégrer l'API dans une application.
+Si nous comparons notre API à un restaurant, la documentation d’API serait la carte de menu du restaurant.
+Maintenant que notre API est installé, je peux esaayer de la tester, pour la tester il faut envoyer une requette HTPP à cette api pour executer une commande, pour avoir des données inscrites en base de donnée, cette documentation "NelmioApi" de tester l'API directement de cet interface, par exemple je voudrais inscrir un nouvel utilisateur.
+
+METHODE:
+-ouvrir l'anglet "inscrir un nouvel utilisateur"
+-appuyer sur le bouton "try it out" qui va me permettre de définir les données de ma requette et de l'executer aprés avoir changer les données
+-{
+  "firstName": "Thomas",
+  "lastName": "Dupont",
+  "email": "thomas@email.com",
+  "password": "Mot de passe"
+}
+-Aprés il faut cliquer sur le bouton "execute"
+-Consulter la base de donnée pour voir les données du nouveau utilisateu
+
+  
+
 
 
 
