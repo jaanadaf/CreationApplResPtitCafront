@@ -1245,9 +1245,398 @@ METHODE:
 }
 -Aprés il faut cliquer sur le bouton "execute"
 -Consulter la base de donnée pour voir les données du nouveau utilisateu
+===========================================================================================================
+Postman
+Postman est un outil populaire pour tester vos API. Il permet de configurer et d’envoyer des requêtes HTTP de manière simple et pratique. Avec son interface visuelle, vous pouvez même générer du code !
 
-  
+Inscription d'un Utilisateur avec Postman
+Vous pouvez tester l'inscription d'un utilisateur directement depuis Postman en effectuant une requête POST vers votre API.
+
+Appeler notre API depuis notre Code avec fetch
+Maintenant que notre API est opérationnelle, nous souhaitons l'appeler directement depuis notre code JavaScript. Il existe différentes méthodes pour cela, mais nous allons utiliser fetch dans ce cours.
+
+Étapes pour Exécuter le Code de Postman
+Changer le type du bouton dans le fichier signup.html :
+
+Modifiez le type du bouton de submit à button.
+Un formulaire avec type submit entraînerait un changement de page, ce qui n'est pas souhaité ici.
+Récupérer l'ID du bouton :
+
+Assurez-vous que le bouton possède un ID et que vous l'utilisez correctement dans le fichier JavaScript.
+Ajouter un eventListener :
+
+Ajoutez un eventListener pour écouter les clics sur le bouton.
+Créez une fonction nommée InscrireUtilisateur et collez le code JavaScript généré par Postman.
+Code JavaScript
+Voici le code généré par Postman pour inscrire un utilisateur :
+
+javascript
+Copier le code
+function InscrireUtilisateur() {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+        "firstName": "Test fetch",
+        "lastName": "test test fetch",
+        "email": "testdepuisPtitcaRes@email.com",
+        "password": "Azerty1234!"
+    });
+
+    const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+    };
+
+    fetch("https://127.0.0.1:8000/api/registration", requestOptions)
+        .then((response) => response.text())
+        .then((result) => console.log(result))
+        .catch((error) => console.error(error));
+}
+
+// Ajout d'un eventListener au bouton
+btnValidation.addEventListener("click", InscrireUtilisateur);
+Vérification de la Fonctionnalité :
+Retournez sur le site du restaurant, cliquez sur la page d'inscription, et utilisez l'inspecteur pour vérifier les requêtes dans l'onglet "Network". Vous pouvez aussi vérifier dans la base de données si l'utilisateur a bien été enregistré.
+Envoyer des Données
+Bien que nous puissions inscrire un utilisateur, les données sont actuellement codées en dur dans notre JavaScript. Nous allons maintenant envoyer à l’API les données fournies par l’utilisateur via le formulaire.
+
+Récupération des Données Utilisateur
+Ajouter un ID au Formulaire :
+
+Dans signup.html, ajoutez un ID au formulaire :
+html
+Copier le code
+<form id="formulaireInscription">
+Récupérer le Formulaire dans signup.js :
+
+Créez une constante pour récupérer le formulaire :
+javascript
+Copier le code
+const formInscription = document.getElementById("formulaireInscription");
+Utiliser FormData pour Récupérer les Données :
+
+Créez une instance de FormData pour récupérer les données de l'utilisateur :
+javascript
+Copier le code
+let dataForm = new FormData(formInscription);
+Mise à Jour du Code
+Remplacez le code d'envoi de données par :
+
+javascript
+Copier le code
+let raw = JSON.stringify({
+    "firstName": dataForm.get("nom"),
+    "lastName": dataForm.get("prenom"),
+    "email": dataForm.get("email"),
+    "password": dataForm.get("mdp")
+});
+Modifier la Gestion de la Réponse :
+Changez response.text() par response.json() pour traiter la réponse JSON de l'API.
+Avertissement
+Attention ! Assurez-vous que les clés utilisées dans l'objet JSON correspondent exactement aux name des inputs dans votre formulaire, par exemple :
+
+html
+Copier le code
+<input type="text" name="nom" />
+et
+
+javascript
+Copier le code
+"firstName": dataForm.get("nom"),
+===============================================================================================
+ACTION APRES LA REQUETTE
+Je vais maintenant réagir différement si mon fetch a réussi ou si il a échoué, je vais pour cela modiffiér le code, pour trouver l'endroit ou il y a la réponse, ou je vais pouvoir récupérer
+le code de retour htpp, pour savoir l'état de la requette,si la requette commence par 2 c'est un succée, 5 erreur serveur, 4 c'est érreur client, je vais pouvoir récupérer la réponse en brut, on va récupérer la response en brut,je vais mettre des acolades pour executer plusieurs code, en finalité je retourner une respone.json, cest à dire d'abord je vais récupérer la réponse globale avec tout le header avec la réponse htpp
+et le return response.json va retourner à la prochaine .then(result) va retourner uniquement le contenue que j'ai besoin sous format json. dans ma response je vais pouvoir utiliser certains éléments,
+c'est pour cela je vais mettre un débouger,
+.then(response => {
+debugger;
+return response.json();
+})
+ce débouger va arréter l'exécution des lignes de code de javascript, pour voir ce qui ce passe, taper response dans la console , qui va nous retourner l'état desvariables, parmis il y'a le statut qui est de 201, ainsi que le ok, qui montre que mon inscription a bien fonctionné, c'est pour cela il faut mettre un if :
+if(response.ok), il nous retourne response.json(), si non une alert:
+else{
+alert("Erreur lors de l'inscription");
+}
+Maintenant je vais faire quelle que chose pour voir si l'inscription a fonctionné, pour rediriger l'utilisateur vers la page de connection, aprés avoir reçu le résultat je vais executer plusieurs ligne de code , je met des acolades, puisque la fonction fléché lorsqu'il n'a pas d'acolade,il permet d'executer une seule ligne de commande
+
+.then(result =>{
+console.log(result)
+})
+le console.log(result) ne me sert pas forcément, certain site connecte l'utilisateur aprés l'inscription, nous faisons pas ce choix , nous nous contons de le rediriger vers la connection , pour rediriger l'utilisateur on utilise la méthode suivante:
+document.location.href="/signin" avec une alerte:
+alert("Bravo "+dataForm.get("prenon")+", vous etes maintenant inscrit, vous pouvez vous connecter.")
+Quand on est redirigé vers la page de connection, maintenant je veux quand je me connecte,j'envoie une requette API pour verifier la connection, ainsi l'utilisateur et le mot de passe et récupérer l4API Token pour valider sa connection.
+
+EXPLICATION DU CODE
+Pour implémenter cette logique, je vais clarifier les étapes de manière structurée pour que tu puisses facilement suivre et adapter ton code pour gérer les réponses d’une requête API lors de l'inscription et de la connexion :
+
+1. Récupérer et Vérifier la Réponse HTTP
+Après avoir envoyé ta requête fetch, utilise .then(response => { ... }) pour analyser le code de retour HTTP et traiter la réponse.
+
+Exemple de code :
+
+javascript
+Copier le code
+fetch('URL_API', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dataForm)
+})
+.then(response => {
+    debugger;  // Permet de mettre un point d'arrêt et d'examiner la réponse
+    if (response.ok) {
+        return response.json(); // Succès (codes 2xx)
+    } else {
+        throw new Error("Erreur lors de l'inscription");
+    }
+})
+.then(result => {
+    console.log(result);
+    // Rediriger l'utilisateur vers la page de connexion avec un message de succès
+    alert("Bravo " + dataForm.get("prenom") + ", vous êtes maintenant inscrit, vous pouvez vous connecter.");
+    document.location.href = "/signin";
+})
+.catch(error => {
+    alert(error.message); // Affiche une erreur en cas de code 4xx ou 5xx
+});
+2. Utiliser debugger pour Vérifier les Données de Réponse
+L’instruction debugger; permet d’arrêter le code à cet endroit et de voir l’état de l’objet response dans la console de développement (accessible avec F12 sur le navigateur). Tape response dans la console pour voir tous les détails, y compris le status et la propriété ok.
+
+3. Rediriger l’Utilisateur après Inscription
+Une fois que l’inscription est confirmée (si response.ok est vrai), utilise document.location.href pour rediriger l'utilisateur vers la page de connexion (/signin). Avant la redirection, tu peux afficher un message de confirmation pour personnaliser l'expérience utilisateur.
+
+4. Gestion de la Connexion (Récupérer le Token API)
+Dans la logique de connexion, après validation de l'email et du mot de passe, tu devras envoyer une requête API pour vérifier les identifiants de l'utilisateur. Voici comment cela peut être structuré :
+
+javascript
+Copier le code
+fetch('URL_CONNEXION_API', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: dataForm.get("email"), password: dataForm.get("password") })
+})
+.then(response => {
+    if (response.ok) {
+        return response.json(); // Récupération du token si la connexion est validée
+    } else {
+        throw new Error("Erreur lors de la connexion");
+    }
+})
+.then(data => {
+    const apiToken = data.token; // Suppose que l'API renvoie un token dans la réponse
+    console.log("Token récupéré :", apiToken);
+    // Stocker le token pour valider la connexion ou rediriger l'utilisateur vers une page protégée
+})
+.catch(error => {
+    alert(error.message); // Affiche une alerte en cas d'erreur
+});
+Résumé des Points Clés
+Utilise debugger pour visualiser l'objet response et comprendre les données renvoyées.
+Gère les erreurs client (4xx) et serveur (5xx) en affichant des messages appropriés.
+Redirige l'utilisateur avec document.location.href après une inscription réussie.
+Lors de la connexion, récupère le token pour authentifier l'utilisateur dans les prochaines requêtes.
+Ces étapes devraient t'aider à structurer ta logique d'inscription et de connexion tout en gérant les erreurs de manière effice
+============================================================================================
 
 
+Connexion
+Nous avons déjà implémenté l’inscription : une fois que l’utilisateur est inscrit, il est redirigé vers la page de connexion. Nous devons maintenant coder cette fonctionnalité de connexion, que nous avions auparavant créée en dur. Voici les étapes pour le faire.
 
+1. Vérification de la fonctionnalité de login sur l'API
+Pour tester la fonctionnalité de connexion, nous allons commencer par la tester directement sur l'API en utilisant le bouton "Try it out". L’API attend deux paramètres : username et password. Nous allons d'abord effectuer un test avec des identifiants incorrects pour vérifier que l’API renvoie bien une erreur.
 
+Exemple de test avec des identifiants incorrects :
+
+json
+Copier le code
+{
+  "username": "anass@yahoo.fr",
+  "password": "Azerty1234!"
+}
+Résultat attendu : une erreur 401 avec le message "erreur":"invalid credentials".
+
+Si nous saisissons des identifiants corrects, la réponse de l’API devrait être la suivante :
+
+json
+Copier le code
+{
+  "user": "anass@yahoo.fr",
+  "apiToken": "d6e59421ea2bd0ec2cf38826d790bf6d7b3b16d0",
+  "roles": [
+    "ROLE_USER"
+  ]
+}
+2. Implémentation dans signin.js
+Nous allons maintenant intégrer cette vérification dans notre fichier signin.js, en remplaçant la vérification en dur des identifiants par un appel à l’API pour vérifier les credentials.
+
+Étapes d’implémentation
+Récupérer le formulaire
+Dans signin.html, nous ajoutons un ID au formulaire de connexion pour faciliter sa récupération :
+
+html
+Copier le code
+<form id="signinForm">
+Ensuite, dans signin.js, nous définissons une constante pour récupérer ce formulaire :
+
+javascript
+Copier le code
+const signinForm = document.getElementById("signinForm");
+Transformer le formulaire en FormData
+Nous créons un objet FormData pour capturer les données du formulaire :
+
+javascript
+Copier le code
+let dataForm = new FormData(signinForm);
+Vérification des attributs name
+Dans le HTML, nous nous assurons que les champs email et password ont bien les attributs name="email" et name="mdp" :
+
+html
+Copier le code
+<input type="email" class="form-control" id="EmailInput" name="email">
+<input type="password" class="form-control" id="PasswordInput" name="mdp">
+Paramétrer l'appel AJAX via fetch
+Nous copions notre précédent modèle fetch, en adaptant les données de connexion :
+
+javascript
+Copier le code
+const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+let raw = JSON.stringify({
+    "username": dataForm.get("email"),
+    "password": dataForm.get("mdp")
+});
+
+const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow"
+};
+
+fetch("https://127.0.0.1:8000/api/login", requestOptions)
+.then(response => {
+    if(response.ok){
+        return response.json();
+    } else {
+        mailInput.classList.add("is-invalid");
+        passwordInput.classList.add("is-invalid");
+    } 
+})
+.then(result => {
+    // Récupération du token
+    const token = result.apiToken;
+    setToken(token);
+
+    // Placer le rôle en cookie
+    setCookie(RoleCookieName, result.roles[0], 7);
+
+    // Redirection
+    window.location.replace("/");
+})
+.catch(error => console.log('error', error));
+3. Vérification du code et optimisation
+Lors des tests sur la page d'accueil, nous constatons que l’utilisateur est bien connecté. Cependant, pour éviter de dupliquer l'URL dans chaque appel fetch, nous pouvons la définir comme une variable globale dans script.js. Ainsi, l'URL sera référencée comme suit :
+
+javascript
+Copier le code
+const apiUrl = "https://127.0.0.1:8000/api/";
+Et dans fetch, nous appelons simplement apiUrl + "login".
+
+AUTRE EXPLICATION
+Connexion
+
+Nous avons implémenté l'inscription : une fois l'utilisateur inscrit, il est redirigé vers la page de connexion. Maintenant, nous devons coder cette fonctionnalité de connexion, auparavant créée en "dur". Voici la démarche pour vérifier les identifiants utilisateur avec notre API.
+
+Test de l'API de Connexion
+
+Dans l'interface de test de l'API ("Try it out"), nous observons que la requête attend deux paramètres : "username" et "password". Nous testons d'abord avec des identifiants incorrects pour vérifier le retour d'une erreur 401 ("invalid credentials"). Ensuite, en fournissant les identifiants valides suivants :
+
+json
+Copier le code
+{
+   "username": "anass@yahoo.fr",
+   "password": "Azerty1234!"
+}
+l'API retourne :
+
+json
+Copier le code
+{
+   "user": "anass@yahoo.fr",
+   "apiToken": "d6e59421ea2bd0ec2cf38826d790bf6d7b3b16d0",
+   "roles": ["ROLE_USER"]
+}
+Implémentation dans le fichier signin.js
+
+Dans le fichier signin.js, nous ajoutons la logique pour récupérer les informations de connexion du formulaire et les envoyer à l'API.
+
+Étapes :
+
+Dans signin.html, ajoutons un id au formulaire de connexion :
+
+html
+Copier le code
+<form id="signinForm">
+Dans signin.js, récupérons le formulaire et convertissons-le en FormData :
+
+javascript
+Copier le code
+const signinForm = document.getElementById("signinForm");
+let dataForm = new FormData(signinForm);
+Paramétrons l'appel AJAX via fetch :
+
+javascript
+Copier le code
+const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+let raw = JSON.stringify({
+   "username": dataForm.get("email"),
+   "password": dataForm.get("mdp")
+});
+
+const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow"
+};
+
+fetch("https://127.0.0.1:8000/api/login", requestOptions)
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        mailInput.classList.add("is-invalid");
+        passwordInput.classList.add("is-invalid");
+    }
+})
+.then(result => {
+    const token = result.apiToken;
+    setToken(token);
+    setCookie(RoleCookieName, result.roles[0], 7);
+    window.location.replace("/");
+})
+.catch(error => console.log('error', error));
+Si l'utilisateur n'est pas trouvé, les champs deviennent rouges en ajoutant la classe is-invalid.
+
+Optimisation avec une Variable d'URL
+
+Au lieu d'appeler directement l'URL absolue dans chaque requête, nous créons une variable globale apiUrl dans script.js pour stocker la base de l'URL de notre API :
+
+javascript
+Copier le code
+const apiUrl = "https://127.0.0.1:8000/api/";
+Dans le fichier signin.js, remplaçons l'URL de fetch :
+
+javascript
+Copier le code
+fetch(`${apiUrl}login`, requestOptions);
+Conclusion
+
+Nous avons maintenant une fonctionnalité de connexion fonctionnelle. L'utilisateur est bien authentifié et redirigé vers la page d'accueil après la connexion. En centralisant l'URL de base de l'API dans une variable, nous optimisons la maintenance du code.

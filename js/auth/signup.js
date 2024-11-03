@@ -5,6 +5,7 @@ const inputMail = document.getElementById("EmailInput");
 const inputPassword = document.getElementById("PasswordInput");
 const inputValidationPassword = document.getElementById("ValidatePasswordInput");
 const btnValidation = document.getElementById("btn-validation-inscription");
+const formIscription = document.getElementById("formulaireIscription");
 
 // Ajout des événements 'input' pour valider les champs en temps réel
 inputNom.addEventListener("input", validateForm); 
@@ -13,6 +14,7 @@ inputMail.addEventListener("input", validateForm);
 inputPassword.addEventListener("input", validateForm);
 inputValidationPassword.addEventListener("input", validateForm);
 btnValidation.addEventListener("click", InscrireUtilisateur);
+
 
 // Fonction permettant de valider tout le formulaire
 function validateForm() {
@@ -106,15 +108,19 @@ function validatePassword(input) {
     }
 }
 function InscrireUtilisateur(){
+    let dataForm = new FormData(formIscription);
+   
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     
-    const raw = JSON.stringify({
-      "firstName": "Test fetch",
-      "lastName": "test test fetch",
-      "email": "testdepuisPtitcaRes@email.com",
-      "password": "Azerty1234!"
-    });
+    let raw = JSON.stringify({
+    "firstName": dataForm.get("nom"),
+    "lastName": dataForm.get("prenom"),
+    "email": dataForm.get("email"),
+    "password": dataForm.get("mdp")
+});
+
+
     
     const requestOptions = {
       method: "POST",
@@ -124,7 +130,35 @@ function InscrireUtilisateur(){
     };
     
     fetch("https://127.0.0.1:8000/api/registration", requestOptions)
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+    .then(response => {
+        if(response.ok){
+            return response.json();
+        }
+        else{
+            alert("Erreur lors de l'inscription");
+        }
+        
+    })
+
+    .then(result =>{
+        if(mailInput.value == "test@mail.com" && passwordInput.value == "123"){
+            alert("Vous etes connectés");
+
+            //il faudra récupérer le vrai token
+            const token = "lkjsdngfljsqdnglkjsdbglkjqskjgkfjgbqslkfdgbskldfgdfgsdgf";
+            setToken(token);
+
+            //placer ce cookie en cookie
+            setCookie(RoleCookieName, "client", 7);
+
+            //l'objectif c'est de placer ce token en cookie
+            window.location.replace("/");
+    })
+    
+         
+    .catch(error => console.log('error', error));
+
+ 
+
 }
+

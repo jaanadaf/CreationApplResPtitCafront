@@ -1,6 +1,7 @@
 const tokenCookieName = "accesstoken";
 const RoleCookieName = "role";
 const signoutBtn = document.getElementById("signout-btn");
+const apiUrl = "https://127.0.0.1:8000/api/";
 
 // Vérification si le bouton de déconnexion existe avant d'ajouter l'événement
 if (signoutBtn) {
