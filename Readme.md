@@ -1640,3 +1640,138 @@ fetch(`${apiUrl}login`, requestOptions);
 Conclusion
 
 Nous avons maintenant une fonctionnalité de connexion fonctionnelle. L'utilisateur est bien authentifié et redirigé vers la page d'accueil après la connexion. En centralisant l'URL de base de l'API dans une variable, nous optimisons la maintenance du code.
+=============================================================================================================================================================================================
+METTREEN PLACE LES RECOMMANDATIONS DE SECURITES DE LA PARTIE FRONT
+Sécuriser notre code
+Utilisation d’un linter
+LINTER
+Un linter est un outil d'analyse statique du code source utilisé dans le développement de logiciels. Son rôle principal est d'inspecter le code source d'un programme informatique pour détecter les erreurs de programmation,les violations de conventions de codage et d'autres problèmes potentiels Les linters sont particulièrement utiles pour améliorer la qualité du code, renforcer la cohérence du style de codage et réduire les bogues.
+Exemple: 
+Sonarlint
+SonarLint est un outil d'analyse statique du code open source développé par SonarSource. C’est un linter que vous pouvez avoir sur votre environnement de travail, comme VSCODE.
+
+C’est une extension, que vous pouvez installer. Une fois installé, il vous montrera les différentes erreurs présentes sur votre code.
+
+FAILLE XSS
+Je vais maintenantprotéger mon site contres certaines faille xss, c'est qaund un utilisateur mal veillant arrive à injecter du code javascript dans notre site , en soi ce code javascript
+pourrait exécuter un code assez simple qu'il nous enbeittrait pas, mais il pourati aussi récupérer les cookies ou gérer les comportement qui enbeiterait l'utilisateur ou ralentir notre site,
+les conséquences pourrait etre grave, cela pourrait etre de la perte de données, du vole des données cela pourrait aussi rendre le site unitisable, pour que les clients s'en aillent et aller dans d'autre sites, par exemple si je veux aller sur un site e.commerce, certains commerçant mal veillant pourraient essayer pour faire concurence et rendre notre site unitilisable,
+comment cela fonctionne,en fait à chaque fois qu'il y'a des entées par exemple dans notre page galerie nous pouvons modifier notre image, dans notre image nous pouvons donner un titre et une image, c'est à dire nous pouvons enregistrer du texte, nous allons voir comment gérer notre galerie image, nous allons tout d'abord dans notre fichier.html, nous allons le lier à du javascript
+je vais dans allRoutes.js, je vais dans la ligne :
+
+new Route("/galerie", "La galerie", "/pages/galerie.html", "js/galerie.js" []),
+puis je vais créer un fichier galerie.js
+L'objectif c'est de récupérer les images depuis l'API, et depuis des images qu'on regoit aller injecter des éléments, par exemple je créer une fonction, qui retourne une chaine de carractére qui serait tout simplement le template de l'image que je viens de coller 
+
+let monImage = getImage("titre","../images/image du plat.jpg");
+
+function getImage(titre, urlImage){
+
+    ` <div class="col p-3">
+            <div class="image-card text-white">
+                <img src="${urlImage}" class="rounded w-100"/>
+                <p class="titre-image">${titre}</p>
+                <div class="action-image-button" data-show="admin" >
+                    <button data-show="admin" type="button" class="btn btn-outline-light"data-bs-toggle="modal" data-bs-target="#EditionPhotoModal"><i class="bi bi-pencil-square"></i></button>
+                   <button type="button" class="btn btn-outline-light"data-bs-toggle="modal" data-bs-target="#DeletePhotoModal"><i class="bi bi-trash"></i></button>
+             
+                </div>
+            </div>
+        </div>`
+
+}
+
+ainsi à l'intérieur de ça dans img src="" je vais pouvoir mettre la valeur de mon image ${urlImage} et dans class =titre-image  ${titre}
+je vais créer une constante :
+
+let monImage = getImage("titre","../images/image du plat.jpg");
+
+Et ce que nous allions pouvoir faire, dans galerie.html, c'est suprimer toutes les images déjas présente , avoir un div contenant des images vide et ajouer un id dans la div
+
+ <div class="row row-cols-2 row-cols-lg-3" id="allImages"> et vouloir ajouter des images dans le javascript
+
+     <div class="col p-3">
+            <div class="image-card text-white">
+                <img src="../images/image-du-plat.jpg" class="rounded w-100" alt="Présentation d'un plat gourmand avec garniture" />
+
+                <p class="titre-image">Titre</p>
+                <div class="action-image-button" data-show="admin" >
+                    <button data-show="admin" type="button" class="btn btn-outline-light"data-bs-toggle="modal" data-bs-target="#EditionPhotoModal"><i class="bi bi-pencil-square"></i></button>
+                   <button type="button" class="btn btn-outline-light"data-bs-toggle="modal" data-bs-target="#DeletePhotoModal"><i class="bi bi-trash"></i></button>
+             
+                </div>
+            </div>
+        </div>
+
+        <div class="col p-3">
+            <div class="image-card text-white">
+                <img src="../images/chef-5993951_640.jpg" class="rounded w-100" alt="Chef en train de cuisiner" />
+
+                <p class="titre-image">Titre</p>
+            </div>
+        </div>
+
+        <div class="col p-3">
+            <div class="image-card text-white">
+                <img src="../images/platter-2009590_640.jpg" class="rounded w-100" alt="Plateau de plats variés avec présentation élégante" />
+
+                <p class="titre-image">Titre</p>
+            </div>
+        </div>
+
+        <div class="col p-3">
+            <div class="image-card text-white">
+                <img src="../images/table-setting-6859276_640.jpg" class="rounded w-100" alt="Table élégamment dressée avec vaisselle et couverts" />
+
+                <p class="titre-image">Titre</p>
+            </div>
+        </div>
+
+        <div class="col p-3">
+            <div class="image-card text-white">
+                <img src="../images/salmon-6353898_640.jpg" class="rounded w-100" alt="Plat de saumon grillé avec garniture" />
+
+                <p class="titre-image">Titre</p>
+            </div>
+        </div>
+
+        <div class="col p-3">
+            <div class="image-card text-white">
+                <img src="../images/service-1303313_640.jpg" class="rounded w-100" alt="Serveur en train de servir des clients à table" />
+
+                <p class="titre-image">Titre</p>
+            </div>
+        </div>
+
+    </div>
+    Aprés avoir suprimer les images et metter un id dans la div, il faut chercher le fichier galerie.js et créer une constante:
+
+    const galerieImage= document.getElementById("allImages");
+
+  Ce que je voudrait, mon galerie image je voudarait lui dire :
+
+//Récupérer les informations des images
+    galerieImage.innerHTML = monImage
+Ce qu'il faudra faire en finalité, c'est récupérer les informations des images dans le fichier galerie.js et pour chacune de ces images les ajouter dans  .innerHTML
+Et dans notre base de données nous aurons une liste délément qui aurons un titre et  une url
+et nous allons pouvoir les récupérer via une requette AJAX, puis les injecter, ces valeurs "titre" "../images/image du plat.jpg" peuvent etre mis à jour par les utilisateur via la modale, ce que nous allons faire plus tard
+Un utilisateur mal veillant dans la valeur "titre " peut faire ce qu'il veut, par exemple il peut mettre une balise image avec une source ect;; 
+<img src=x onerror="window.location.replace(\'htpps://google.com\')"/>
+ce qu'il faut faire c'est de créer une fonction pour rendre mon code html saint, au moment ou on veut inclure .innerHTML, faire une fonction pour rendre mon html saint, 
+On peu créer une fonction sanatizeHtml(monImage)
+
+let titre = '<img src=x onerror="window.location.replace(\'htpps://google.com\')"/>';
+let imgSource = "../images/image du plat.jpg";
+
+let monImage = getImage(titre,imgSource );
+Et l'appeler dans la fonction 
+getImage(titre, urlImage)
+titre = sanitizeHtml(titre);
+urlImage = sanitizeHtml(urlImage)
+Cette méthode sanitizeHtml() il permetrait de gerer le titre comme du texte et pas comme du html , cest pour cela il faut créer une autre fonction qui permet de gérer le titre comme du texte et pas comme du code html
+
+function sanitizeHtml(text){
+    const tempHtml = document.createElement('div')
+    tempHtml.textContent = text;
+    return tempHtml.innerHTML;
+
