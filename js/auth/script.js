@@ -3,10 +3,12 @@ const RoleCookieName = "role";
 const signoutBtn = document.getElementById("signout-btn");
 const apiUrl = "https://127.0.0.1:8000/api/";
 
+
 // Vérification si le bouton de déconnexion existe avant d'ajouter l'événement
 if (signoutBtn) {
     signoutBtn.addEventListener("click", signout);
 }
+
 
 function getRole() {
     return getCookie(RoleCookieName);
@@ -37,10 +39,10 @@ function setCookie(name, value, days) {
 }
 
 function getCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
+    let nameEQ = name + "=";
+    let ca = document.cookie.split(';');
     for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
+        let c = ca[i];
         while (c.charAt(0) == ' ') c = c.substring(1, c.length);
         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
     }
@@ -105,4 +107,33 @@ function sanitizeHtml(text){
     return tempHtml.innerHTML;
 }
 
+function getInfoUser(){
+    
+
+    const myHeaders = new Headers();
+    myHeaders.append("X-AUTH-TOKEN", getToken());
+    
+    const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow"
+};
+     fetch(apiUrl+"account/me", requestOptions)
+     .then(response=>{
+        if(response.ok){
+            return response.json();
+        }
+        else{
+            console.log("Impossible de récupérer les informations utilisateur");
+        }
+    })
+    .then(result=> {
+        return result;
+    }) 
+    .catch(error => {
+        console.log("erreur lors de la récupération des données utilisateur");
+    })
+
+
+}
 

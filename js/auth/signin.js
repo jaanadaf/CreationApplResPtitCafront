@@ -10,7 +10,7 @@ btnSignin.addEventListener("click" , checkCredentials);
 
         //Ici, il faut appeler  l'API pour vérifier les credentiales en BD
         const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Content-Type", "application/json");
     
         let raw = JSON.stringify({
             "username": dataForm.get("email"),

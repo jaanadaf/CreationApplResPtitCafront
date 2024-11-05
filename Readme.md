@@ -1641,137 +1641,371 @@ Conclusion
 
 Nous avons maintenant une fonctionnalité de connexion fonctionnelle. L'utilisateur est bien authentifié et redirigé vers la page d'accueil après la connexion. En centralisant l'URL de base de l'API dans une variable, nous optimisons la maintenance du code.
 =============================================================================================================================================================================================
-METTREEN PLACE LES RECOMMANDATIONS DE SECURITES DE LA PARTIE FRONT
-Sécuriser notre code
-Utilisation d’un linter
-LINTER
-Un linter est un outil d'analyse statique du code source utilisé dans le développement de logiciels. Son rôle principal est d'inspecter le code source d'un programme informatique pour détecter les erreurs de programmation,les violations de conventions de codage et d'autres problèmes potentiels Les linters sont particulièrement utiles pour améliorer la qualité du code, renforcer la cohérence du style de codage et réduire les bogues.
-Exemple: 
-Sonarlint
-SonarLint est un outil d'analyse statique du code open source développé par SonarSource. C’est un linter que vous pouvez avoir sur votre environnement de travail, comme VSCODE.
+Mise en place des recommandations de sécurité pour le front-end
+1. Sécuriser notre code
+1.1 Utilisation d’un linter
+Qu'est-ce qu'un linter ?
 
-C’est une extension, que vous pouvez installer. Une fois installé, il vous montrera les différentes erreurs présentes sur votre code.
+Un linter est un outil d'analyse statique du code source utilisé dans le développement de logiciels. Son rôle principal est d'inspecter le code pour détecter les erreurs de programmation, les violations de conventions de codage et d'autres problèmes potentiels. Les linters sont particulièrement utiles pour améliorer la qualité du code, renforcer la cohérence du style de codage et réduire les bogues.
 
-FAILLE XSS
-Je vais maintenantprotéger mon site contres certaines faille xss, c'est qaund un utilisateur mal veillant arrive à injecter du code javascript dans notre site , en soi ce code javascript
-pourrait exécuter un code assez simple qu'il nous enbeittrait pas, mais il pourati aussi récupérer les cookies ou gérer les comportement qui enbeiterait l'utilisateur ou ralentir notre site,
-les conséquences pourrait etre grave, cela pourrait etre de la perte de données, du vole des données cela pourrait aussi rendre le site unitisable, pour que les clients s'en aillent et aller dans d'autre sites, par exemple si je veux aller sur un site e.commerce, certains commerçant mal veillant pourraient essayer pour faire concurence et rendre notre site unitilisable,
-comment cela fonctionne,en fait à chaque fois qu'il y'a des entées par exemple dans notre page galerie nous pouvons modifier notre image, dans notre image nous pouvons donner un titre et une image, c'est à dire nous pouvons enregistrer du texte, nous allons voir comment gérer notre galerie image, nous allons tout d'abord dans notre fichier.html, nous allons le lier à du javascript
-je vais dans allRoutes.js, je vais dans la ligne :
+Exemple : SonarLint
 
-new Route("/galerie", "La galerie", "/pages/galerie.html", "js/galerie.js" []),
-puis je vais créer un fichier galerie.js
-L'objectif c'est de récupérer les images depuis l'API, et depuis des images qu'on regoit aller injecter des éléments, par exemple je créer une fonction, qui retourne une chaine de carractére qui serait tout simplement le template de l'image que je viens de coller 
+SonarLint est un outil d'analyse statique du code open source développé par SonarSource. C’est un linter que vous pouvez installer dans votre environnement de travail, tel que Visual Studio Code (VSCode).
 
-let monImage = getImage("titre","../images/image du plat.jpg");
+Une fois installé, SonarLint vous montrera les différentes erreurs présentes dans votre code.
 
-function getImage(titre, urlImage){
+2. Protection contre les failles XSS
+2.1 Qu'est-ce qu'une faille XSS ?
+Une faille XSS (Cross-Site Scripting) se produit lorsqu'un utilisateur malveillant injecte du code JavaScript dans notre site. Ce code peut exécuter des actions nuisibles, comme récupérer des cookies ou modifier le comportement de la page, entraînant des conséquences graves telles que la perte ou le vol de données. Cela peut également rendre le site inutilisable, poussant les clients à se diriger vers des concurrents.
 
-    ` <div class="col p-3">
+2.2 Fonctionnement des failles XSS
+À chaque fois qu'il y a des entrées sur notre site (par exemple, dans notre galerie d'images), un utilisateur peut modifier des éléments comme le titre et l'image.
+
+Exemple de gestion de la galerie d'images
+Création d'une route dans allRoutes.js :
+
+javascript
+Copier le code
+new Route("/galerie", "La galerie", "/pages/galerie.html", "js/galerie.js", []);
+Création d'un fichier galerie.js pour récupérer les images depuis l'API.
+
+Fonction pour générer l'image :
+
+javascript
+Copier le code
+function getImage(titre, urlImage) {
+    return `
+        <div class="col p-3">
             <div class="image-card text-white">
                 <img src="${urlImage}" class="rounded w-100"/>
                 <p class="titre-image">${titre}</p>
-                <div class="action-image-button" data-show="admin" >
-                    <button data-show="admin" type="button" class="btn btn-outline-light"data-bs-toggle="modal" data-bs-target="#EditionPhotoModal"><i class="bi bi-pencil-square"></i></button>
-                   <button type="button" class="btn btn-outline-light"data-bs-toggle="modal" data-bs-target="#DeletePhotoModal"><i class="bi bi-trash"></i></button>
-             
+                <div class="action-image-button" data-show="admin">
+                    <button data-show="admin" type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#EditionPhotoModal"><i class="bi bi-pencil-square"></i></button>
+                    <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#DeletePhotoModal"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
-        </div>`
-
+        </div>`;
 }
+Ajout d'images dans galerie.html :
 
-ainsi à l'intérieur de ça dans img src="" je vais pouvoir mettre la valeur de mon image ${urlImage} et dans class =titre-image  ${titre}
-je vais créer une constante :
+Supprimez toutes les images déjà présentes.
+Créez une div vide pour ajouter des images :
+html
+Copier le code
+<div class="row row-cols-2 row-cols-lg-3" id="allImages"></div>
+Récupération des informations d'images dans galerie.js :
 
-let monImage = getImage("titre","../images/image du plat.jpg");
+javascript
+Copier le code
+const galerieImage = document.getElementById("allImages");
+galerieImage.innerHTML = monImage; // Mon image est obtenue via la fonction getImage
+2.3 Prévention des attaques XSS
+Pour prévenir les attaques XSS, il est crucial de traiter les entrées utilisateurs. Par exemple, un utilisateur malveillant pourrait essayer d'injecter du code malveillant, comme :
 
-Et ce que nous allions pouvoir faire, dans galerie.html, c'est suprimer toutes les images déjas présente , avoir un div contenant des images vide et ajouer un id dans la div
+html
+Copier le code
+<img src=x onerror="window.location.replace('https://google.com')"/>
+2.4 Fonction de sanitation
+Il est nécessaire de créer une fonction pour rendre notre code HTML sain avant de l'injecter dans le DOM.
 
- <div class="row row-cols-2 row-cols-lg-3" id="allImages"> et vouloir ajouter des images dans le javascript
+Exemple de fonction de sanitation :
 
-     <div class="col p-3">
-            <div class="image-card text-white">
-                <img src="../images/image-du-plat.jpg" class="rounded w-100" alt="Présentation d'un plat gourmand avec garniture" />
-
-                <p class="titre-image">Titre</p>
-                <div class="action-image-button" data-show="admin" >
-                    <button data-show="admin" type="button" class="btn btn-outline-light"data-bs-toggle="modal" data-bs-target="#EditionPhotoModal"><i class="bi bi-pencil-square"></i></button>
-                   <button type="button" class="btn btn-outline-light"data-bs-toggle="modal" data-bs-target="#DeletePhotoModal"><i class="bi bi-trash"></i></button>
-             
-                </div>
-            </div>
-        </div>
-
-        <div class="col p-3">
-            <div class="image-card text-white">
-                <img src="../images/chef-5993951_640.jpg" class="rounded w-100" alt="Chef en train de cuisiner" />
-
-                <p class="titre-image">Titre</p>
-            </div>
-        </div>
-
-        <div class="col p-3">
-            <div class="image-card text-white">
-                <img src="../images/platter-2009590_640.jpg" class="rounded w-100" alt="Plateau de plats variés avec présentation élégante" />
-
-                <p class="titre-image">Titre</p>
-            </div>
-        </div>
-
-        <div class="col p-3">
-            <div class="image-card text-white">
-                <img src="../images/table-setting-6859276_640.jpg" class="rounded w-100" alt="Table élégamment dressée avec vaisselle et couverts" />
-
-                <p class="titre-image">Titre</p>
-            </div>
-        </div>
-
-        <div class="col p-3">
-            <div class="image-card text-white">
-                <img src="../images/salmon-6353898_640.jpg" class="rounded w-100" alt="Plat de saumon grillé avec garniture" />
-
-                <p class="titre-image">Titre</p>
-            </div>
-        </div>
-
-        <div class="col p-3">
-            <div class="image-card text-white">
-                <img src="../images/service-1303313_640.jpg" class="rounded w-100" alt="Serveur en train de servir des clients à table" />
-
-                <p class="titre-image">Titre</p>
-            </div>
-        </div>
-
-    </div>
-    Aprés avoir suprimer les images et metter un id dans la div, il faut chercher le fichier galerie.js et créer une constante:
-
-    const galerieImage= document.getElementById("allImages");
-
-  Ce que je voudrait, mon galerie image je voudarait lui dire :
-
-//Récupérer les informations des images
-    galerieImage.innerHTML = monImage
-Ce qu'il faudra faire en finalité, c'est récupérer les informations des images dans le fichier galerie.js et pour chacune de ces images les ajouter dans  .innerHTML
-Et dans notre base de données nous aurons une liste délément qui aurons un titre et  une url
-et nous allons pouvoir les récupérer via une requette AJAX, puis les injecter, ces valeurs "titre" "../images/image du plat.jpg" peuvent etre mis à jour par les utilisateur via la modale, ce que nous allons faire plus tard
-Un utilisateur mal veillant dans la valeur "titre " peut faire ce qu'il veut, par exemple il peut mettre une balise image avec une source ect;; 
-<img src=x onerror="window.location.replace(\'htpps://google.com\')"/>
-ce qu'il faut faire c'est de créer une fonction pour rendre mon code html saint, au moment ou on veut inclure .innerHTML, faire une fonction pour rendre mon html saint, 
-On peu créer une fonction sanatizeHtml(monImage)
-
-let titre = '<img src=x onerror="window.location.replace(\'htpps://google.com\')"/>';
-let imgSource = "../images/image du plat.jpg";
-
-let monImage = getImage(titre,imgSource );
-Et l'appeler dans la fonction 
-getImage(titre, urlImage)
-titre = sanitizeHtml(titre);
-urlImage = sanitizeHtml(urlImage)
-Cette méthode sanitizeHtml() il permetrait de gerer le titre comme du texte et pas comme du html , cest pour cela il faut créer une autre fonction qui permet de gérer le titre comme du texte et pas comme du code html
-
-function sanitizeHtml(text){
-    const tempHtml = document.createElement('div')
+javascript
+Copier le code
+function sanitizeHtml(text) {
+    const tempHtml = document.createElement('div');
     tempHtml.textContent = text;
     return tempHtml.innerHTML;
+}
+Utilisation de la fonction de sanitation :
+
+javascript
+Copier le code
+let titre = '<img src=x onerror="window.location.replace(\'https://google.com\')"/>';
+let imgSource = "../images/image du plat.jpg";
+
+let monImage = getImage(titre, imgSource);
+titre = sanitizeHtml(titre);
+imgSource = sanitizeHtml(imgSource);
+En utilisant la fonction sanitizeHtml(), nous garantissons que le titre est traité comme du texte et non comme du code HTML.
+
+METTRE EN PLACE LES RECOMMANDATIONS DE SÉCURITÉ DE LA PARTIE FRONT
+Sécuriser notre code
+Utilisation d’un linter
+Un linter est un outil d'analyse statique du code source utilisé dans le développement de logiciels. Son rôle principal est d'inspecter le code source d'un programme informatique pour détecter les erreurs de programmation, les violations de conventions de codage et d'autres problèmes potentiels. Les linters sont particulièrement utiles pour améliorer la qualité du code, renforcer la cohérence du style de codage et réduire les bogues.
+
+Exemple : SonarLint
+
+SonarLint est un outil d'analyse statique du code open source développé par SonarSource. C’est un linter que vous pouvez intégrer à votre environnement de travail, comme Visual Studio Code. Une fois installé, il vous montrera les différentes erreurs présentes dans votre code.
+
+Faille XSS
+Il est important de protéger notre site contre les failles XSS (Cross-Site Scripting). Cela se produit lorsqu'un utilisateur malveillant parvient à injecter du code JavaScript sur notre site. Ce code pourrait exécuter des actions nuisibles, telles que récupérer des cookies ou perturber le comportement du site, ce qui peut avoir des conséquences graves : perte de données, vol de données, ou rendre le site inutilisable. Par exemple, dans un contexte de commerce en ligne, un concurrent malveillant pourrait tenter de rendre notre site inaccessible pour inciter les clients à aller ailleurs.
+
+Comment cela fonctionne
+À chaque fois qu'il y a des entrées sur notre page (par exemple, lors de l'ajout d'images dans notre galerie), nous devons être vigilants. Dans notre fichier allRoutes.js, nous allons lier notre page galerie :
+
+javascript
+Copier le code
+new Route("/galerie", "La galerie", "/pages/galerie.html", "js/galerie.js", []);
+Puis, nous allons créer un fichier galerie.js. L'objectif est de récupérer les images depuis l'API et de les injecter dans notre page. Nous allons créer une fonction qui retourne une chaîne de caractères représentant le template de l'image :
+
+javascript
+Copier le code
+let monImage = getImage("titre", "../images/image_du_plat.jpg");
+
+function getImage(titre, urlImage) {
+    return `
+        <div class="col p-3">
+            <div class="image-card text-white">
+                <img src="${urlImage}" class="rounded w-100" />
+                <p class="titre-image">${titre}</p>
+                <div class="action-image-button" data-show="admin">
+                    <button data-show="admin" type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#EditionPhotoModal">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#DeletePhotoModal">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>`;
+}
+Dans notre fichier galerie.html, nous allons supprimer toutes les images déjà présentes et ajouter un div contenant les images avec un ID :
+
+html
+Copier le code
+<div class="row row-cols-2 row-cols-lg-3" id="allImages"></div>
+Nous créerons une constante dans galerie.js :
+
+javascript
+Copier le code
+const galerieImage = document.getElementById("allImages");
+Récupérer les informations des images
+Nous allons récupérer les informations des images et les injecter dans notre div :
+
+javascript
+Copier le code
+galerieImage.innerHTML = monImage;
+Nous devons également récupérer ces informations depuis notre base de données via une requête AJAX. Les valeurs "titre" et "../images/image_du_plat.jpg" peuvent être mises à jour par les utilisateurs via une modale, que nous allons créer plus tard.
+
+Sécurisation du titre
+Un utilisateur malveillant pourrait injecter du code JavaScript via le champ "titre", par exemple :
+
+html
+Copier le code
+<img src=x onerror="window.location.replace('https://google.com')"/>
+Pour éviter cela, nous devons créer une fonction pour assainir notre code HTML au moment où nous voulons inclure .innerHTML. Nous allons créer une fonction sanitizeHtml(monImage) :
+
+javascript
+Copier le code
+let titre = '<img src=x onerror="window.location.replace(\'https://google.com\')"/>';
+let imgSource = "../images/image_du_plat.jpg";
+
+let monImage = getImage(titre, imgSource);
+titre = sanitizeHtml(titre);
+urlImage = sanitizeHtml(urlImage);
+
+function sanitizeHtml(text) {
+    const tempHtml = document.createElement('div');
+    tempHtml.textContent = text;
+    return tempHtml.innerHTML;
+}
+Cette méthode sanitizeHtml() permettra de gérer le titre comme du texte, et non comme du code HTML, ce qui renforce la sécurité de notre application.
+=========================================================================
+Envoi de Requêtes Authentifiées avec un Jeton:
+L'authentification est une partie très importante de notre application. Différents utilisateurs veulent y accéder, et si un utilisateur tente de récupérer ou de modifier des données sensibles, cela pourrait nuire à la sécurité de l'application. Dans notre API, l'endpoint api/account/me permet de récupérer toutes les informations de l'utilisateur. Nous allons tester cet appel avec Postman.
+
+Étapes :
+
+Ouvrir un onglet dans Postman
+
+Cliquez sur le signe + pour ouvrir un nouvel onglet.
+Vérifier la méthode HTTP
+
+Sélectionnez la méthode GET (ou autre si nécessaire). Dans notre cas, choisissez GET.
+Entrer l'URL de l'API
+
+Collez l'URL https://127.0.0.1:8000/api/account/me dans la barre "Enter URL or paste text".
+Tester l'API sans paramètres
+
+Envoyez la requête en cliquant sur Send. Si vous n'êtes pas authentifié, un message "Full authentication is required to access this resource" apparaîtra en mode Preview, et le statut affichera 401 Unauthorized.
+Effectuer un login pour obtenir le jeton
+
+Changez la méthode en POST.
+
+Collez https://127.0.0.1:8000/api/login dans la barre d'URL.
+
+Dans l'onglet Body, sélectionnez raw, puis JSON.
+
+Collez le contenu suivant :
+
+json
+Copier le code
+{
+  "username": "anass@yahoo.fr",
+  "password": "Azerty1234!"
+}
+Cliquez sur Send. Si tout est correct, un statut 200 OK s'affichera, et le jeton api token sera généré.
+
+Ajouter le jeton aux en-têtes
+
+Revenez à la requête GET de https://127.0.0.1:8000/api/account/me.
+Dans Headers, entrez X-AUTH-TOKEN dans Key, et collez le jeton obtenu dans Value.
+Vérifier la réponse JSON
+
+Cliquez sur Send pour envoyer la requête authentifiée.
+Dans l'onglet Pretty, vous verrez les informations JSON de l'utilisateur.
+Stocker le jeton pour les futures requêtes
+
+Une fois connecté, stockez ce token dans un cookie. Ensuite, passez ce token dans les headers de vos requêtes fetch pour envoyer des requêtes authentifiées.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+DEUXIEME EXPLICATION
+Pour envoyer une requête authentifiée à votre API via Postman, suivez les étapes ci-dessous :
+
+Ouvrir un nouvel onglet
+Dans Postman, cliquez sur le signe + pour ouvrir un nouvel onglet.
+
+Sélectionner la méthode GET
+Dans le menu déroulant des méthodes HTTP, choisissez GET (ou la méthode appropriée pour votre requête).
+
+Entrer l’URL de l’API
+Collez l’URL de votre API dans le champ d’URL. Par exemple : https://127.0.0.1:8000/api/account/me.
+
+Tester l’API sans authentification
+Si vous tentez d'accéder directement à l'API sans authentification, vous recevrez probablement un message d'erreur. Cliquez sur Send pour envoyer la requête, puis sur Preview pour voir le message. Vous verrez probablement le message Full authentication is required to access this resource, avec le statut 401 Unauthorized.
+
+Se connecter pour obtenir le jeton
+Avant de pouvoir accéder à l’API, vous devez vous connecter pour obtenir un jeton d'authentification. Pour cela :
+
+Ouvrez un autre onglet dans Postman et sélectionnez la méthode POST.
+
+Entrez l’URL de connexion : https://127.0.0.1:8000/api/login.
+
+Dans l’onglet Body, sélectionnez raw et le format JSON.
+
+Collez les données d’identification dans le champ de texte, par exemple :
+
+json
+Copier le code
+{
+  "username": "anass@yahoo.fr",
+  "password": "Azerty1234!"
+}
+Cliquez sur Send pour envoyer la requête.
+
+Récupérer le jeton d’authentification
+Si les identifiants sont corrects, vous recevrez une réponse avec le statut 200 OK et un jeton d’authentification (api token). Copiez ce jeton, car il sera nécessaire pour les requêtes authentifiées.
+
+Ajouter le jeton aux en-têtes de la requête
+
+Revenez dans l'onglet de votre requête GET vers https://127.0.0.1:8000/api/account/me.
+Allez dans l’onglet Headers.
+Dans la colonne Key, ajoutez X-AUTH-TOKEN.
+Dans la colonne Value, collez le jeton que vous avez récupéré.
+Envoyer la requête avec authentification
+Cliquez sur Send. Si tout est configuré correctement, vous recevrez une réponse en JSON contenant les informations de l’utilisateur.
+
+Stocker le jeton pour les requêtes futures
+Pour automatiser l'authentification dans votre front-end, stockez le jeton dans un cookie ou un autre espace de stockage sécurisé et incluez-le dans les en-têtes (X-AUTH-TOKEN) de vos requêtes fetch.
+
+Cela vous permettra d’envoyer des requêtes authentifiées et de sécuriser l’accès aux données de l’utilisateur.
+===============================================================================================================================================================================================
+AUTHENTIFIE UNE REQUETTE:
+Nous voulons maintenant créer une méthode permettant de récupérer les informations de l’utilisateur. Nous voulons exécuter cette requête HTTP depuis notre code JavaScript, via la méthode fetch.
+Maintenant que j'ai reuusi à faire une requête identifié depuis "Postman", je vais essayer de faire cette requête identifié depuis "fetch" en javascript, le but est de créer une méthode qui sera nomé 
+"getInfoUser" et qui nous permettra de récupérer les informations de l'utilisateur actuellement connecté, cette fonctionalité pourra servir de marquer "Bienvenue Toto" en haut à droite du menu
+Si nou voulions récupérer son prénom, nous voulons donc appelé cette "api/account/me", mais nous voulons l'appeler depuis javascript, nous allons donc ouvrir note fichier "script.js" et nous allons créer une fonction
+qui s'appelera function qui va nous permettre de récupérer les informations utilisateurs, je vais l'appeler à chaque fois que j'arrive sur une page, c'est pour cela que je vais la tester en faisant un "console.log"
+function getInfoUser(){
+     console.log("Récupération des informations de l'utilisateu");
+}
+Appeler cette méthode à chaque fois c'est pour cela il faut un  :
+getInfoUser()
+Puis aller tester tout ça dans l'application, donc dans cette méthode je vais faire un "fetch"
+-construire l'objet "Headers" qu'on va aller le chercher dans le fichier "signin.js" on le colle telle quel, je vais regarder le contenue de ma requete, en cliquant sur "api/account/me" , je 
+vois "No parameters" donc le "body" est vide , donc il faut la suprimer cette ligne "myHeaders.append("Content-Type", "application/json");"
+
+         const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+le "raw" pas la peine de le positionner on a pas besoin de le rajouter puisque c'est vide à ignorer le "raw"
+On a besoin de "requetesOptions" mais il faut faire de la vérification changer "POST" par "GET": suprimer "raw"
+
+const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow"
+    };
+
+    Cette ligne va envoyer une requete à mon serveur:
+
+    fetch(apiUrl+"account/me", requestOptions)
+
+    Aprés il faut paraméter une fois que j'ai ma réponse:
+
+    .then(response=>{
+        if(response.ok){
+            return response.json(;)
+        }
+    })
+  else{
+            console.log("Impossible de récupérer les informations utilisateur");
+        }
+    }
+    Aprés les transformation en "json", ja fait un .then de mon "result" aprés un console.log(result)
+    .then(result=> {
+        console.log(result);
+    }) 
+    Aprés gérer l'erreur:
+
+     .catch(error => {
+        console.log("erreur lors de la récupération des données utilisateur");
+    })
+Il faut rajouter le "Token" en dessous de "MyHeader" pour récupérer les informations utilisateur
+  myHeaders.append("X-AUTH-TOKEN", getToken());
+
+  Finalement on aurra le code suivant:
+
+  function getInfoUser(){
+    console.log("Récupération des informations de l'utilisateu");
+
+    const myHeaders = new Headers();
+    myHeaders.append("X-AUTH-TOKEN", getToken());
+    
+    const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow"
+};
+     fetch(apiUrl+"account/me", requestOptions)
+     .then(response=>{
+        if(response.ok){
+            return response.json();
+        }
+        else{
+            console.log("Impossible de récupérer les informations utilisateur");
+        }
+    })
+    .then(result=> {
+        console.log(result);
+    }) 
+    .catch(error => {
+        console.log("erreur lors de la récupération des données utilisateur");
+    })
+}
+-Maintenant on peut faire quelques modification:
+Au lieu de :
+console.log(result);
+il faut :
+return result;
+Enlever ce code:
+
+console.log("Récupération des informations de l'utilisateu");
+
+Je vais pouvoir enlever l'appel automatique de la méthode:
+
+getInfoUser();
+
+
+
 
