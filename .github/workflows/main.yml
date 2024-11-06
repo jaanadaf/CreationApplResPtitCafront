@@ -9,16 +9,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: appleboy/scp-action@v0.1.0
         with:
-          server: ftp-ptitrest.alwaysdata.net
+          host: ftp-ptitrest.alwaysdata.net
           username: ptitrest
           password: ${{ secrets.ftp_password }}
-          server-dir: /www/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/Bootstrap/scss/**
-            **/node_modules/Bootstrap/js/**
-            **/node_modules/Bootstrap-icons/icons/**
+          source: "./"  # Dossier de fichiers source
+          target: "/www/"  # Dossier cible sur le serveur
+          port: 22  # Port par défaut pour SFTP
 
