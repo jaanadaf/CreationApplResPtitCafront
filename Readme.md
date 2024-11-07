@@ -2068,82 +2068,202 @@ Une fois le transfert terminé, connectez-vous sur votre espace Alwaysdata.
 Accédez à votre site et faites un Ctrl + F5 pour rafraîchir la page.
 Votre site devrait maintenant être en ligne et accessible via l’URL fournie par Alwaysdata
 ===========================================================================
-AUTOMATISER LE DEPLOIEMENT 
-Maintenant que nous avons déployer notre application vie le protocole FTP, nous voulons automatiser  ce Déploiement,
- c'est à dire à chaque fois que je fait une modification et je pousse ctte modification vers la branche précise par exemple "branche main ", je voudrais que ces modifications soit 
- "Uplaoder" automatiquement sur le seveur sans que j'aille passer par FileZilla, cest pour ce la il y' a un processus qui s'appele 
- d'intégration et de déploiement continue, qui va nous permettre de déploiyer cela automatiquement
- 'est pour cela qu'il faut aller sur github et cliquer sur le bouton "action", il faut mettre en place un "workflow" cadre de travail
- nous allons donner à github des instructions à respecter pour lui demander d'envoyer tout le code en FTP
- pour configurer les actions que github doit éffectuer , nous avons un fichier ".yamal", en cliquand sur le lien 
- "workflow", il nous raméne vers le fichier "yamal", nous devons chercher sur la partie gauche "Marketplace"
- l'action que nous voulons faire, si je tape "FTP" nous aurons différentes extension, qui vont nous pérmettent de faire différentes choses
- Etant donné que nous voulons faire un déploiement via FTP, nous cherchons dons FTP, mais il y'a différents modules
- du "net, node, symfony ..." dans notre cas on va déployer "FTP Deploy", si je clique dessus j'ai accés à sa documentation,
- en collant cette adresse dans google "https://github.com/marketplace/actions/ftp-deploy" nous aurons la documenattion , pour nous monter comment faire pour Paramétrer
- et l'adapter à notre fichier, l'objectif maintenant est de prendre le déploiement de base:
+AUTOMATISER LE DÉPLOIEMENT
+Maintenant que nous avons déployé notre application via le protocole FTP, nous voulons automatiser ce déploiement. C'est-à-dire qu'à chaque fois que je fais une modification et que je pousse cette modification vers une branche précise (par exemple, la branche main), je souhaite que ces modifications soient automatiquement uploadées sur le serveur, sans avoir à passer par FileZilla.
 
- on: push ======> le déclencheur quand il y'aura un "puch"
+Pour cela, il existe un processus appelé intégration et déploiement continu (CI/CD) qui nous permet de déployer automatiquement notre application.
+
+Voici les étapes détaillées pour configurer ce processus :
+
+Étape 1 : Créer un workflow GitHub
+Accéder à l'onglet "Actions" sur GitHub :
+
+Allez dans votre dépôt GitHub et cliquez sur l'onglet Actions.
+Vous allez y créer un workflow, un cadre de travail qui définira les actions que GitHub doit exécuter automatiquement.
+Ajouter un fichier .yml :
+
+Ce fichier servira à configurer le processus de déploiement automatique.
+Dans l'onglet Actions, cliquez sur New Workflow pour créer un fichier de workflow ou modifiez-en un existant.
+Étape 2 : Installer l'action FTP
+Rechercher l'action "FTP" sur GitHub Marketplace :
+
+Allez dans la section Marketplace de GitHub et recherchez "FTP".
+Il existe plusieurs extensions pour FTP. Nous allons utiliser l'extension FTP Deploy.
+Vous pouvez consulter la documentation de cette action en visitant ce lien : FTP Deploy on GitHub Marketplace.
+Configurer l'action FTP :
+
+Une fois sur la page de l'action FTP Deploy, copiez l'exemple de configuration de base et personnalisez-le pour votre projet.
+Étape 3 : Exemple de fichier .yml pour FTP
+Voici la configuration de base pour automatiser le déploiement avec FTP :
+
+yaml
+Copier le code
+on:
+  push:
+    branches:
+      - main  # Déclenche l'action lors d'un push sur la branche 'main'
+
 name: 🚀 Deploy website on push
-jobs: ===========> différentes actions à effectuer 
+
+jobs:
   web-deploy:
     name: 🎉 Deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Spécifie l'environnement d'exécution
+
     steps:
-    - name: 🚚 Get latest code ==============> 1er action est de récupérer le code
-      uses: actions/checkout@v4
-    
-    - name: 📂 Sync files =========> la 2eme est de synchroniseer les fichiers
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4  # Action pour récupérer le dernier code
+
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5  # Action pour déployer via FTP
       with:
-        server: ftp.samkirkland.com
-        username: myFtpUserName ============> spécifier 
-        password: ${{ secrets.ftp_password }} ===========> spécifier
+        server: ftp-ptitrest.alwaysdata.net  # Serveur FTP
+        username: ptitrest  # Nom d'utilisateur FTP
+        password: ${{ secrets.ftp_password }}  # Mot de passe stocké en secret
+        server-dir: /www/  # Répertoire cible sur le serveur FTP
+        exclude: |
+          **/.git*  # Exclure les fichiers git
+          **/.git*/**
+          **/node_modules/bootstrap/scss/**  # Exclure les fichiers de dépendances inutiles
+          **/node_modules/bootstrap/js/**
+          **/node_modules/bootstrap-icons/icons/**
+Étape 4 : Configurer le mot de passe FTP dans GitHub Secrets
+Ajouter un secret pour le mot de passe FTP :
+Allez dans Settings de votre dépôt GitHub.
+Dans la section Secrets and Variables, sélectionnez Actions.
+Cliquez sur New repository secret.
+Donnez un nom au secret, par exemple : ftp_password.
+Entrez le mot de passe FTP dans la valeur et cliquez sur Add secret.
+Cela permet à GitHub de récupérer votre mot de passe sans l'exposer dans le fichier .yml (qui est public).
 
+Étape 5 : Vérification du déploiement
+Faire un commit et un push :
+Une fois que vous avez configuré le fichier .yml avec les bonnes informations, effectuez un commit et poussez vos modifications vers la branche main.
+Vérifier dans GitHub Actions :
+Allez dans l'onglet Actions pour vérifier que le workflow a été exécuté correctement.
+Vérifier dans FileZilla :
+Pour vérifier que les fichiers ont bien été déployés, ouvrez FileZilla.
+Cliquez sur Connection rapide et connectez-vous avec vos identifiants FTP.
+Vérifiez que les fichiers de votre dépôt sont bien présents sur le serveur dans le répertoire spécifié (/www/).
+Conclusion
+En suivant ces étapes, vous avez mis en place un déploiement automatisé via FTP. Chaque fois que vous poussez du code vers la branche main, GitHub Action déploie automatiquement les fichiers sur votre serveur FTP sans intervention manuelle.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+AUTRE EXPLICATION
+Pour corriger et automatiser le déploiement de votre application via FTP sur GitHub avec GitHub Actions, suivez ces étapes détaillées pour configurer correctement le workflow dans un fichier .yml :
 
-Le coller dans le fichier ".yamal" de github
--Récupérer le FTP , il faut aller dans "alwaydata" pour le récupérer, notre cas c'est "ftp-ptitrest.alwaysdata.net"
-server: ftp.samkirkland.com  <=======> server:ftp-ptitrest.alwaysdata.net
- username: myFtpUserName <========> username: ptitrest
- Je voie que le mot de passe est placé dans le secter " password: ${{ secrets.ftp_password }}"
- puisque ce fichier ".yamal" est accéssible au grand publique, qui sera disponible dans "repository"
- que je vais le paramétrer dans le fichier secret 
-il faut rajouter une ligne dans le fichier ".yamal", pour préciser la racine de notre déploiement au bon endroit dans notre cas ça sera:
-server-dir: /www/
-rajouter une ligne pour exlure certain fichier inutile pour notre seveur
-exclude: |
-  **/.git*
-  **/.git*/**
-  **/node_modules/Bootstrap/scss/**
-  **/node_modules/Bootstrap/js/**
-  **/node_modules/Bootstrap-icons/icons/**
-  Maintenant je peut faire un "commit"
+Étapes à suivre :
+Créer un fichier workflow GitHub Actions :
+Allez sur votre dépôt GitHub.
+Cliquez sur l'onglet "Actions" en haut.
+Cliquez sur "New Workflow" ou si vous avez déjà un fichier workflow, ouvrez-le (généralement situé dans .github/workflows/).
+Vous pouvez copier et coller ce fichier de workflow.
+Exemple de fichier deploy.yml :
+Voici un exemple complet de fichier .yml pour le déploiement via FTP.
 
-  on: push
+yaml
+Copier le code
+on:
+  push:
+    branches:
+      - main  # Spécifiez la branche qui déclenchera le déploiement, ici 'main'
+
 name: 🚀 Deploy website on push
+
 jobs:
   web-deploy:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
+    
     steps:
-      - name: 🚚 Get latest code
-        uses: actions/checkout@v4
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v3  # Récupérer le code depuis le dépôt
 
-      - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ftp-ptitrest.alwaysdata.net
-          username: ptitrest
-          password: ${{ secrets.ftp_password }}
-          server-dir: /www/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/Bootstrap/scss/**
-            **/node_modules/Bootstrap/js/**
-            **/node_modules/Bootstrap-icons/icons/**
--Maintenant aller dans les paramétres de monworflow pour paramètrer le "secret password",
-aller settings , secrets and variables , action, new repository secret
-name: ftp_password
-Secrect : Mot de passe pour accéder à mon FTP , puis cliquer sur "add password secret"
-Pour s'assurer que tout fonctionne, il faut aller dans FilleZila , cliquer sur "Connection rapide", puis cliquer sur le nom du site pour avoir le projet sur la plate forme
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5  # Action pour déployer via FTP
+      with:
+        server: ftp-ptitrest.alwaysdata.net  # Spécifiez votre serveur FTP
+        username: ptitrest  # Spécifiez votre nom d'utilisateur FTP
+        password: ${{ secrets.ftp_password }}  # Utilisez un secret pour votre mot de passe FTP
+        server-dir: /www/  # Dossier de destination sur le serveur
+        exclude: |
+          **/.git*  # Exclure les fichiers Git
+          **/.git*/**
+          **/node_modules/bootstrap/scss/**  # Exclure les fichiers inutiles
+          **/node_modules/bootstrap/js/**
+          **/node_modules/bootstrap-icons/icons/**
+
+Explication du fichier deploy.yml :
+on: push: Cette action sera déclenchée chaque fois que vous pousserez (push) des changements sur la branche spécifiée (main dans cet exemple).
+actions/checkout@v3: Récupère le dernier code depuis votre dépôt.
+SamKirkland/FTP-Deploy-Action@v4.3.5: Action GitHub pour déployer les fichiers via FTP.
+server: Spécifie l'adresse de votre serveur FTP.
+username et password: Identifiants de connexion. Le mot de passe est stocké dans un secret GitHub pour plus de sécurité.
+server-dir: Le répertoire sur le serveur où les fichiers seront téléchargés.
+exclude: Liste des fichiers ou dossiers à exclure du déploiement (comme .git ou node_modules).
+Ajouter un secret dans GitHub :
+GitHub ne permet pas d'inclure des informations sensibles comme des mots de passe directement dans le fichier .yml. Vous devez donc stocker votre mot de passe FTP dans les Secrets de votre dépôt.
+
+Allez dans Settings (paramètres) de votre dépôt GitHub.
+Sous Secrets and Variables, sélectionnez Actions.
+Cliquez sur New repository secret.
+Donnez un nom à votre secret, par exemple, ftp_password.
+Entrez votre mot de passe FTP dans la valeur du secret et cliquez sur Add secret.
+Cela protégera votre mot de passe en toute sécurité et ne sera pas visible dans le fichier .yml.
+
+Tester le déploiement :
+Pour tester si tout fonctionne correctement, effectuez une modification sur la branche main (ou la branche que vous avez spécifiée dans branches) et poussez ces changements (git push). Le déploiement devrait se déclencher automatiquement.
+
+Vous pouvez vérifier le déploiement dans l'onglet Actions de GitHub pour voir si le workflow s'est bien exécuté.
+Si le déploiement réussit, vos fichiers seront synchronisés avec le serveur FTP automatiquement.
+Vérifications supplémentaires :
+Si vous avez un client FTP comme FileZilla, vous pouvez tester la connexion pour vérifier que les informations sont correctes avant de faire le déploiement automatisé.
+Résumé des étapes :
+Créez un fichier .yml dans .github/workflows/ pour définir votre workflow.
+Ajoutez les bonnes informations de votre serveur FTP dans le fichier .yml.
+Stockez votre mot de passe FTP dans les GitHub Secrets.
+Effectuez un git push sur la branche spécifiée et vérifiez que les fichiers sont déployés automatiquement.
+Cela automatisera complètement votre déploiement via FTP chaque fois que vous poussez des modifications sur la branche main !
+=========================================================================
+CORRIGER UN DEPLOIEMENT
+Aprés plusieurs testes, nous nous rendend compte que notre application a bien été déployé, mais qu'il manque des éléments, par exemple si je fait F12, je remarque que je n'ai pas accés à mon "boostrap-bundle" "icons", si je vérifie à FileZilla, node_module qui est présent sur ma machine mais pas sur GitHube car il est dans le dossier ".ignor", donc eu fait lorsqu' on est sur la machine en locale nous exécutons "npm install" pour installer toutes les dépendnaces sur notre machine en locale, les dépendances installés nous les enoyons pas sur GitHub, pour avoir un systéme de gestion plus simple, chaque fois que nous déplaçons notre application quelleque part, que se soit sur une autre machine de dévelloppement ou sur un serveur, nous voulons à l'endroit que nous avons déplacer l'application le "npm install" pour avoir à jour nos dépendances là ou nous les envoyons, donsc il faudrait demander à GitHub
+de faire un "npm install" lui meme avant d'envoyer mon site en "FTP", je dois dons modifier mon "workflow" "Deploy website on push", cliquer sur "main.yaml" puis modifier .
+Aprés avoir récupérer le code juste aprés "uses: actions/checkout@v3" , rajouter le code suivant qui permet d'installer les dépendances: 
+  - name: 📂 Install dependencies
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+Aprés avoir installé node , je vais installé les dépendances "npm",
+
+- name: 📂 Install npm dependencies
+      run: npm install
+Donc que va faire le code :
+d'abord on récupére le code,
+
+  name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v3
+En suite on installe "node" sur le jobe là ou il doit se faire le déploiement, puis on installe les dépendances "npm"
+
+- name: 📂 Install npm dependencies
+      run: npm install
+Puis on va envoyer tout ça :
+
+  - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ftp-ptitrest.alwaysdata.net
+        username: ptitrest
+        password: ${{ secrets.ftp_password }}
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/bootstrap/scss/**
+          **/node_modules/bootstrap/js/**
+          **/node_modules/bootstrap-icons/icons/**  
+        server-dir: /www/
+Aprés on fait un "commit change "
+An appyant sur le fichier "main.yaml"Deploy on aura la réponse suivante:
+"succeeded 5 minutes ago "
+ 
