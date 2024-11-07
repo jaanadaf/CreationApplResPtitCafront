@@ -1910,65 +1910,69 @@ Pour automatiser l'authentification dans votre front-end, stockez le jeton dans 
 
 Cela vous permettra d’envoyer des requêtes authentifiées et de sécuriser l’accès aux données de l’utilisateur.
 ===============================================================================================================================================================================================
-AUTHENTIFIE UNE REQUETTE:
-Nous voulons maintenant créer une méthode permettant de récupérer les informations de l’utilisateur. Nous voulons exécuter cette requête HTTP depuis notre code JavaScript, via la méthode fetch.
-Maintenant que j'ai reuusi à faire une requête identifié depuis "Postman", je vais essayer de faire cette requête identifié depuis "fetch" en javascript, le but est de créer une méthode qui sera nomé 
-"getInfoUser" et qui nous permettra de récupérer les informations de l'utilisateur actuellement connecté, cette fonctionalité pourra servir de marquer "Bienvenue Toto" en haut à droite du menu
-Si nou voulions récupérer son prénom, nous voulons donc appelé cette "api/account/me", mais nous voulons l'appeler depuis javascript, nous allons donc ouvrir note fichier "script.js" et nous allons créer une fonction
-qui s'appelera function qui va nous permettre de récupérer les informations utilisateurs, je vais l'appeler à chaque fois que j'arrive sur une page, c'est pour cela que je vais la tester en faisant un "console.log"
-function getInfoUser(){
-     console.log("Récupération des informations de l'utilisateu");
+Authentification d'une Requête : Récupération des Informations de l'Utilisateur
+Nous allons créer une méthode permettant de récupérer les informations de l’utilisateur connecté via une requête HTTP en JavaScript, en utilisant la méthode fetch. Après avoir réussi à exécuter une requête authentifiée depuis Postman, nous allons implémenter cette requête en JavaScript.
+
+Le but est de créer une méthode appelée getInfoUser, qui récupérera les informations de l'utilisateur actuellement connecté. Cela pourrait, par exemple, afficher "Bienvenue Toto" en haut à droite du menu.
+
+Étapes de Création de la Fonction getInfoUser
+Initialiser la fonction dans script.js
+
+Ouvrez le fichier script.js et créez la fonction getInfoUser pour récupérer les informations de l'utilisateur.
+Pour tester son bon fonctionnement, utilisez un console.log.
+javascript
+Copier le code
+function getInfoUser() {
+    console.log("Récupération des informations de l'utilisateur");
 }
-Appeler cette méthode à chaque fois c'est pour cela il faut un  :
-getInfoUser()
-Puis aller tester tout ça dans l'application, donc dans cette méthode je vais faire un "fetch"
--construire l'objet "Headers" qu'on va aller le chercher dans le fichier "signin.js" on le colle telle quel, je vais regarder le contenue de ma requete, en cliquant sur "api/account/me" , je 
-vois "No parameters" donc le "body" est vide , donc il faut la suprimer cette ligne "myHeaders.append("Content-Type", "application/json");"
 
-         const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-le "raw" pas la peine de le positionner on a pas besoin de le rajouter puisque c'est vide à ignorer le "raw"
-On a besoin de "requetesOptions" mais il faut faire de la vérification changer "POST" par "GET": suprimer "raw"
+// Appeler la fonction pour test
+getInfoUser();
+Construire l'Objet Headers
 
+Pour configurer les en-têtes de la requête, construisez l’objet Headers à partir du fichier signin.js. Cependant, supprimez la ligne myHeaders.append("Content-Type", "application/json");, car aucun corps (body) n’est requis ici.
+javascript
+Copier le code
+const myHeaders = new Headers();
+myHeaders.append("X-AUTH-TOKEN", getToken());  // Ajouter le jeton d’authentification
+Configurer les Options de la Requête
+
+Définissez les options de la requête en utilisant la méthode GET et sans body, puis configurez la redirection.
+javascript
+Copier le code
 const requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: raw,
-            redirect: "follow"
-    };
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow"
+};
+Envoyer la Requête avec fetch
 
-    Cette ligne va envoyer une requete à mon serveur:
-
-    fetch(apiUrl+"account/me", requestOptions)
-
-    Aprés il faut paraméter une fois que j'ai ma réponse:
-
-    .then(response=>{
-        if(response.ok){
-            return response.json(;)
-        }
-    })
-  else{
+Appelez l'API avec l’URL apiUrl + "account/me". Une fois la réponse obtenue, traitez-la en vérifiant si elle est réussie.
+javascript
+Copier le code
+fetch(apiUrl + "account/me", requestOptions)
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
             console.log("Impossible de récupérer les informations utilisateur");
         }
-    }
-    Aprés les transformation en "json", ja fait un .then de mon "result" aprés un console.log(result)
-    .then(result=> {
-        console.log(result);
-    }) 
-    Aprés gérer l'erreur:
-
-     .catch(error => {
-        console.log("erreur lors de la récupération des données utilisateur");
     })
-Il faut rajouter le "Token" en dessous de "MyHeader" pour récupérer les informations utilisateur
-  myHeaders.append("X-AUTH-TOKEN", getToken());
+    .then(result => {
+        console.log(result);
+    })
+    .catch(error => {
+        console.log("Erreur lors de la récupération des données utilisateur");
+    });
+Modifications Finales
 
-  Finalement on aurra le code suivant:
-
-  function getInfoUser(){
-    console.log("Récupération des informations de l'utilisateu");
-
+Retourner le résultat au lieu de l’afficher avec console.log(result);.
+Supprimer le message console.log("Récupération des informations de l'utilisateur");.
+Retirer l'appel automatique de la fonction getInfoUser() en fin de fichier.
+Code Final de la Fonction getInfoUser
+javascript
+Copier le code
+function getInfoUser() {
     const myHeaders = new Headers();
     myHeaders.append("X-AUTH-TOKEN", getToken());
     
@@ -1976,36 +1980,169 @@ Il faut rajouter le "Token" en dessous de "MyHeader" pour récupérer les inform
         method: "GET",
         headers: myHeaders,
         redirect: "follow"
-};
-     fetch(apiUrl+"account/me", requestOptions)
-     .then(response=>{
-        if(response.ok){
-            return response.json();
-        }
-        else{
-            console.log("Impossible de récupérer les informations utilisateur");
-        }
-    })
-    .then(result=> {
-        console.log(result);
-    }) 
-    .catch(error => {
-        console.log("erreur lors de la récupération des données utilisateur");
-    })
+    };
+
+    return fetch(apiUrl + "account/me", requestOptions)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.log("Impossible de récupérer les informations utilisateur");
+            }
+        })
+        .then(result => {
+            return result;
+        })
+        .catch(error => {
+            console.log("Erreur lors de la récupération des données utilisateur");
+        });
 }
--Maintenant on peut faire quelques modification:
-Au lieu de :
-console.log(result);
-il faut :
-return result;
-Enlever ce code:
+Avec cette structure, vous pouvez maintenant récupérer les informations de l'utilisateur connecté et les utiliser dans l'interface, comme afficher un message de bienvenue.
+==========================================================================================================================================================================
+METTRE EN LIGNE LE SITE
+Mettre en Ligne le Site
+AlwaysData : Création de Compte
+Pour héberger notre site internet, nous avons besoin d’un hébergeur, c’est-à-dire un tiers qui propose la location de serveur sur lequel nous allons installer notre projet. Bien que la plupart des hébergeurs soient payants, il existe des options gratuites, particulièrement pour des projets étudiants. AlwaysData propose un hébergement gratuit de 100 Mo avec un nom de domaine en alwaysdata.net. C'est cet hébergeur que nous allons utiliser.
 
-console.log("Récupération des informations de l'utilisateu");
+Déploiement avec FileZilla
+Pour héberger gratuitement le front de notre site, nous allons suivre les étapes ci-dessous :
 
-Je vais pouvoir enlever l'appel automatique de la méthode:
+Accéder aux paramètres de AlwaysData :
 
-getInfoUser();
+Rendez-vous dans la section "Web" puis "Sites".
+Créez un nouveau site que vous nommerez ptitrest.alwaysdata.net. L'objectif est d'héberger le site complet.
+Configurer le type de site :
+
+Cliquez sur l'icône de paramétrage (la roue).
+Dans les options, choisissez le type fichiers statiques.
+Cela vous permettra d'utiliser le répertoire racine et de transférer tous les fichiers de votre site sur AlwaysData afin qu’il puisse les lire correctement.
+Gérer les routes du site :
+
+Puisque nous avons mis en place un système de routage complexe pour récupérer les URL et rediriger les utilisateurs, il est nécessaire de configurer le serveur Apache pour qu'il gère correctement les routes.
+
+Dans la section Directives supplémentaires du virtual host, ajoutez les règles suivantes pour configurer les redirections :
+
+apache
+Copier le code
+RewriteEngine On
+RewriteRule ^/[a-zA-Z0-9]+[/]?$ /index.html [QSA,L]
+Validation de la configuration :
+
+Une fois les réglages effectués, vous pouvez valider. Votre site sera alors créé et accessible en ligne via AlwaysData.
+==========================================================================
+METTRE EN LIGNE LA PARTIE FRONT DE MON SITE
+Introduction à FileZilla
+FileZilla est un logiciel client FTP (File Transfer Protocol) open source, permettant de transférer des fichiers entre un ordinateur local et un serveur distant via FTP, SFTP ou FTPS. Il est disponible pour les systèmes d’exploitation Windows, macOS, et Linux. Grâce à FileZilla, nous allons pouvoir déployer la partie front de notre site sur le serveur.
+
+Hébergement sur Alwaysdata
+Maintenant que mon site est hébergé chez Alwaysdata, je peux le déployer en ligne. Alwaysdata offre une URL accessible sous l'onglet "Site" qui permet d'accéder au site une fois déployé.
+
+L'objectif est donc d'envoyer notre site directement sur Alwaysdata via FTP. Pour cela, nous utiliserons FileZilla comme client FTP pour gérer les transferts de fichiers. Trois paramètres sont essentiels pour cette connexion :
+
+Hôte : L’adresse FTP du serveur.
+Identifiant : Le nom d'utilisateur configuré sur Alwaysdata.
+Mot de passe : Le mot de passe associé à ce compte.
+Configuration de FileZilla pour le Projet
+Connexion à FileZilla :
+
+Lancez FileZilla.
+Dans la barre de connexion en haut, entrez les informations suivantes :
+Hôte : Collez l’adresse FTP (disponible sur Alwaysdata après “Hôte FTP”).
+Identifiant : Votre nom d'utilisateur sur Alwaysdata.
+Mot de passe : Le mot de passe configuré lors de l’inscription.
+Cliquez sur Connexion rapide.
+Confirmer le certificat :
+
+Une fenêtre de certificat peut apparaître, indiquant un certificat inconnu. Cliquez sur OK pour confirmer.
+Structure de FileZilla et Transfert des Fichiers
+Une fois connecté, la fenêtre de FileZilla se divise en deux parties :
+
+Site local (à gauche) : représente les fichiers de votre ordinateur. Vous verrez un panneau de navigation avec les dossiers de vos projets ; en cliquant dessus, vous pouvez accéder aux fichiers nécessaires.
+Site distant (à droite) : représente les fichiers sur le serveur distant Alwaysdata.
+Transférer les Fichiers de admin à www
+Accédez au dossier www sur le serveur distant (côté droit). Il contient un fichier index.html par défaut.
+Supprimez le fichier index.html dans le dossier www pour éviter les conflits.
+Sélectionnez les dossiers et fichiers nécessaires depuis le site local et faites-les glisser dans le dossier www sur le site distant.
+Vérification du Déploiement
+Une fois le transfert terminé, connectez-vous sur votre espace Alwaysdata.
+Accédez à votre site et faites un Ctrl + F5 pour rafraîchir la page.
+Votre site devrait maintenant être en ligne et accessible via l’URL fournie par Alwaysdata
+===========================================================================
+AUTOMATISER LE DEPLOIEMENT 
+Maintenant que nous avons déployer notre application vie le protocole FTP, nous voulons automatiser  ce Déploiement,
+ c'est à dire à chaque fois que je fait une modification et je pousse ctte modification vers la branche précise par exemple "branche main ", je voudrais que ces modifications soit 
+ "Uplaoder" automatiquement sur le seveur sans que j'aille passer par FileZilla, cest pour ce la il y' a un processus qui s'appele 
+ d'intégration et de déploiement continue, qui va nous permettre de déploiyer cela automatiquement
+ 'est pour cela qu'il faut aller sur github et cliquer sur le bouton "action", il faut mettre en place un "workflow" cadre de travail
+ nous allons donner à github des instructions à respecter pour lui demander d'envoyer tout le code en FTP
+ pour configurer les actions que github doit éffectuer , nous avons un fichier ".yamal", en cliquand sur le lien 
+ "workflow", il nous raméne vers le fichier "yamal", nous devons chercher sur la partie gauche "Marketplace"
+ l'action que nous voulons faire, si je tape "FTP" nous aurons différentes extension, qui vont nous pérmettent de faire différentes choses
+ Etant donné que nous voulons faire un déploiement via FTP, nous cherchons dons FTP, mais il y'a différents modules
+ du "net, node, symfony ..." dans notre cas on va déployer "FTP Deploy", si je clique dessus j'ai accés à sa documentation,
+ en collant cette adresse dans google "https://github.com/marketplace/actions/ftp-deploy" nous aurons la documenattion , pour nous monter comment faire pour Paramétrer
+ et l'adapter à notre fichier, l'objectif maintenant est de prendre le déploiement de base:
+
+ on: push ======> le déclencheur quand il y'aura un "puch"
+name: 🚀 Deploy website on push
+jobs: ===========> différentes actions à effectuer 
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code ==============> 1er action est de récupérer le code
+      uses: actions/checkout@v4
+    
+    - name: 📂 Sync files =========> la 2eme est de synchroniseer les fichiers
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ftp.samkirkland.com
+        username: myFtpUserName ============> spécifier 
+        password: ${{ secrets.ftp_password }} ===========> spécifier
 
 
+Le coller dans le fichier ".yamal" de github
+-Récupérer le FTP , il faut aller dans "alwaydata" pour le récupérer, notre cas c'est "ftp-ptitrest.alwaysdata.net"
+server: ftp.samkirkland.com  <=======> server:ftp-ptitrest.alwaysdata.net
+ username: myFtpUserName <========> username: ptitrest
+ Je voie que le mot de passe est placé dans le secter " password: ${{ secrets.ftp_password }}"
+ puisque ce fichier ".yamal" est accéssible au grand publique, qui sera disponible dans "repository"
+ que je vais le paramétrer dans le fichier secret 
+il faut rajouter une ligne dans le fichier ".yamal", pour préciser la racine de notre déploiement au bon endroit dans notre cas ça sera:
+server-dir: /www/
+rajouter une ligne pour exlure certain fichier inutile pour notre seveur
+exclude: |
+  **/.git*
+  **/.git*/**
+  **/node_modules/Bootstrap/scss/**
+  **/node_modules/Bootstrap/js/**
+  **/node_modules/Bootstrap-icons/icons/**
+  Maintenant je peut faire un "commit"
 
+  on: push
+name: 🚀 Deploy website on push
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
 
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftp-ptitrest.alwaysdata.net
+          username: ptitrest
+          password: ${{ secrets.ftp_password }}
+          server-dir: /www/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/Bootstrap/scss/**
+            **/node_modules/Bootstrap/js/**
+            **/node_modules/Bootstrap-icons/icons/**
+-Maintenant aller dans les paramétres de monworflow pour paramètrer le "secret password",
+aller settings , secrets and variables , action, new repository secret
+name: ftp_password
+Secrect : Mot de passe pour accéder à mon FTP , puis cliquer sur "add password secret"
