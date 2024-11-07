@@ -2146,3 +2146,4 @@ jobs:
 aller settings , secrets and variables , action, new repository secret
 name: ftp_password
 Secrect : Mot de passe pour accéder à mon FTP , puis cliquer sur "add password secret"
+Pour s'assurer que tout fonctionne, il faut aller dans FilleZila , cliquer sur "Connection rapide", puis cliquer sur le nom du site pour avoir le projet sur la plate forme
