@@ -7,7 +7,15 @@ jobs:
     steps:
     - name: 🚚 Get latest code
       uses: actions/checkout@v3
-   
+      
+    - name: 📂 Install Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'  # Assurez-vous que cette version correspond à celle de votre projet 
+
+    - name: 📂 Install npm dependencies
+      run: npm install
+
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
@@ -24,4 +32,5 @@ jobs:
         protocol: ftps
         server-timeout: 60s  # Augmentez le délai de connexion
         reconnect-delay: 5s  # Délai entre chaque reconnexion en cas de déconnexion
+
 
