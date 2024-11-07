@@ -1,4 +1,4 @@
-on : push
+on: push
 name: 🚀 Deploy website on push
 jobs:
   web-deploy:
@@ -11,7 +11,7 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
-        server:  ftp-ptitrest.alwaysdata.net
+        server: ftps://ftp-ptitrest.alwaysdata.net  # Utiliser ftps:// pour activer FTPS
         username: ptitrest
         password: ${{ secrets.ftp_password }}
         exclude: |
@@ -21,3 +21,4 @@ jobs:
           **/node_modules/bootstrap/js/**
           **/node_modules/bootstrap-icons/icons/**  
         server-dir: /www/
+        protocol: ftps  # Spécifier le protocole FTPS pour une connexion sécurisée
