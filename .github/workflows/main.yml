@@ -11,7 +11,7 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
-        server: ftp-ptitrest.alwaysdata.net  # Nom de l'hôte sans 'ftps://'
+        server: ftp-ptitrest.alwaysdata.net
         username: ptitrest
         password: ${{ secrets.ftp_password }}
         exclude: |
@@ -21,4 +21,7 @@ jobs:
           **/node_modules/bootstrap/js/**
           **/node_modules/bootstrap-icons/icons/**  
         server-dir: /www/
-        protocol: ftps  # Protocole sécurisé FTPS
+        protocol: ftps
+        server-timeout: 60s  # Augmentez le délai de connexion
+        reconnect-delay: 5s  # Délai entre chaque reconnexion en cas de déconnexion
+
